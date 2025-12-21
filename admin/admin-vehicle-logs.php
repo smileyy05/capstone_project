@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Check if parking_logs table exists, if not create it
 $table_check = db_query("SELECT EXISTS (
@@ -433,4 +433,5 @@ $revenue_today = db_fetch_assoc($revenue_query)['total'];
     }, 30000);
   </script>
 </body>
+
 </html>
