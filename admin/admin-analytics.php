@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 try {
     // Get current month's revenue
@@ -123,4 +123,5 @@ try {
         'error' => $e->getMessage()
     ]);
 }
+
 ?>
