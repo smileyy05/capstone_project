@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 $response = ['success' => '', 'error' => '', 'errors' => []];
 
@@ -56,4 +56,5 @@ if (count($response['errors']) === 0) {
 }
 
 echo json_encode($response);
+
 ?>
