@@ -16,7 +16,7 @@ $vehicle_type = $_SESSION['vehicle_type'];
 $balance = $_SESSION['balance'] ?? 0.00;
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Try to include PHP QR Code library
 $qrlib_path = __DIR__ . '/phpqrcode/qrlib.php';
@@ -371,4 +371,5 @@ if ($qr_generated && file_exists($qr_filename)) {
     <button class="btn logout-btn" onclick="location.href='customer-logout.php'">🔒 Logout</button>
 </div>
 </body>
+
 </html>
