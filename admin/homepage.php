@@ -7,7 +7,6 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../DB/DB_connection.php';
 
 $error = '';
-$debug = ''; // Add debug info
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
@@ -20,16 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Query admin by email
             $result = db_prepare("SELECT * FROM admins WHERE email = $1", [$email]);
             
-            // Debug: Check if query worked
+            // Check if query worked
             if (!$result) {
-                $error = "Database query failed: " . db_error();
+                // Generic error - don't reveal database issues
+                $error = "Invalid email or password. Please try again.";
+                error_log("Database query failed: " . db_error());
             } elseif (db_num_rows($result) === 0) {
-                $error = "No admin found with email: " . htmlspecialchars($email);
+                // Generic error - don't reveal if email exists or not
+                $error = "Invalid email or password. Please try again.";
             } else {
                 $admin = db_fetch_assoc($result);
-                
-                // Debug: Show password hash info (REMOVE THIS IN PRODUCTION!)
-                $debug = "Found admin. Password hash starts with: " . substr($admin['password'], 0, 10);
                 
                 // Check if password is hashed or plain text
                 if (substr($admin['password'], 0, 4) === '$2y$' || substr($admin['password'], 0, 4) === '$2a$') {
@@ -40,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header("Location: admin-dashboard.php");
                         exit;
                     } else {
-                        $error = "Invalid password (hashed comparison failed)";
+                        // Generic error - don't reveal password verification details
+                        $error = "Invalid email or password. Please try again.";
                     }
                 } else {
                     // Password might be plain text, compare directly
@@ -50,13 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header("Location: admin-dashboard.php");
                         exit;
                     } else {
-                        $error = "Invalid password (plain text comparison failed)";
+                        // Generic error - don't reveal password verification details
+                        $error = "Invalid email or password. Please try again.";
                     }
                 }
             }
         } catch (Exception $e) {
+            // Log the actual error but show generic message to user
             error_log("Admin Login Error: " . $e->getMessage());
-            $error = "An error occurred: " . $e->getMessage();
+            $error = "An error occurred. Please try again later.";
         }
     }
 }
@@ -230,20 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       font-weight: 600;
       font-size: 0.95rem;
       border: 2px solid #fca5a5;
-      animation: slideDown 0.3s ease;
-      word-break: break-word;
-    }
-    
-    .msg-debug {
-      color: #0369a1;
-      background: #e0f2fe;
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      font-weight: 600;
-      font-size: 0.85rem;
-      border: 2px solid #7dd3fc;
       animation: slideDown 0.3s ease;
       word-break: break-word;
     }
@@ -509,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-size: 0.95rem;
       }
       
-      .msg-error, .msg-debug {
+      .msg-error {
         padding: 0.85rem;
         font-size: 0.85rem;
       }
@@ -627,10 +615,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Admin Login</h2>
         <p class="subtitle">Secure Access to Dashboard</p>
         
-        <?php if($debug): ?>
-          <div class="msg-debug"><?php echo htmlspecialchars($debug); ?></div>
-        <?php endif; ?>
-        
         <?php if($error): ?>
           <div class="msg-error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
@@ -638,7 +622,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" autocomplete="off">
           <div class="form-group">
             <label for="email">Email Address*</label>
-            <input type="email" id="email" name="email" placeholder="Enter your Email Address" required value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
+            <input type="email" id="email" name="email" placeholder="Enter your Email Address" required>
           </div>
           
           <div class="form-group">
