@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Verify password (assuming passwords are hashed)
                 if (password_verify($password, $admin['password'])) {
                     $_SESSION['admin'] = $email;
-                    header("Location: admin/admin-dashboard.php");
+                    header("Location: admin-dashboard.php");  // FIXED: Removed 'admin/' prefix
                     exit;
                 } else {
                     $error = "Invalid email or password!";
@@ -331,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           
           <button type="submit" class="login-btn">Login</button>
-          <a href="../website/index.php" class="back-link">Back to Main</a>
+          <a href="/index.php" class="back-link">Back to Main</a>
         </form>
       </div>
     </div>
