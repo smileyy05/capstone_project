@@ -17,19 +17,21 @@ $fieldErrors = [];
 if ($name === '') {
     $fieldErrors['name'] = "Full Name is required!";
 }
+
 if ($email === '') {
     $fieldErrors['email'] = "Email Address is required!";
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $fieldErrors['email'] = "Invalid email format!";
-} elseif (!str_ends_with(strtolower($email), '@gmail.com')) {
-    $fieldErrors['email'] = "Email must end with @gmail.com!";
 }
+
 if ($plate === '') {
     $fieldErrors['plate'] = "Plate Number is required!";
 }
+
 if ($vehicle === '') {
     $fieldErrors['vehicle'] = "Vehicle Type is required!";
 }
+
 if ($password === '') {
     $fieldErrors['password'] = "Password is required!";
 }
@@ -57,18 +59,21 @@ if ($result && db_num_rows($result) > 0) {
     exit;
 }
 
-// Insert data (hash password for security)
+// Hash password
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-$sql = "INSERT INTO customers (name, email, plate, vehicle, password) VALUES (?, ?, ?, ?, ?)";
-$result = db_prepare($sql, [$name, $email, $plate, $vehicle, $hashedPassword]);
+// Generate unique QR code (you can customize this format)
+// Format: PLATE-TIMESTAMP
+$qr_code = strtoupper($plate) . '-' . time();
+
+// Insert data with QR code
+$sql = "INSERT INTO customers (name, email, plate, vehicle, password, balance, qr_code) 
+        VALUES (?, ?, ?, ?, ?, 0.00, ?)";
+$result = db_prepare($sql, [$name, $email, $plate, $vehicle, $hashedPassword, $qr_code]);
 
 if ($result) {
     echo json_encode(["success" => "Registration successful!"]);
 } else {
     echo json_encode(["error" => "Database error: " . db_error()]);
 }
-
-// Connection will be closed automatically at script end
-
 ?>
