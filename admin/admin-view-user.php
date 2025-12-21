@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 $userId = $_GET['id'] ?? null;
 if (!$userId) {
@@ -718,4 +718,5 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
     });
   </script>
 </body>
+
 </html>
