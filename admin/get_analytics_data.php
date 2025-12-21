@@ -1,31 +1,145 @@
 <?php
-session_start(); // ADD THIS
+session_start();
 header('Content-Type: application/json');
 
-// ADD AUTHENTICATION CHECK
+// Check if admin is logged in
 if (!isset($_SESSION['admin'])) {
+    http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Not authenticated']);
     exit();
 }
 
+// Include database connection
 require_once __DIR__ . '/../DB/DB_connection.php';
 
 try {
+    // Get current month in YYYY-MM format
     $current_month = date('Y-m');
+    $previous_month = date('Y-m', strtotime('-1 month'));
     
-    // ... rest of your existing queries ...
+    // Get current month's revenue
+    $current_month_sql = "SELECT COALESCE(SUM(parking_fee), 0) as total 
+                          FROM parking_logs 
+                          WHERE status = 'exited' 
+                          AND exit_time IS NOT NULL
+                          AND TO_CHAR(exit_time, 'YYYY-MM') = $1";
     
-    // FIX: Average daily revenue calculation
-    $days_in_month = date('t'); // Total days in month, not current day
-    $avg_daily_revenue = $days_in_month > 0 ? $current_revenue / $days_in_month : 0;
+    $current_month_result = db_prepare($current_month_sql, [$current_month]);
+    $current_month_data = db_fetch_assoc($current_month_result);
+    $current_month_revenue = floatval($current_month_data['total'] ?? 0);
+
+    // Get previous month's revenue for comparison
+    $previous_month_sql = "SELECT COALESCE(SUM(parking_fee), 0) as total 
+                           FROM parking_logs 
+                           WHERE status = 'exited' 
+                           AND exit_time IS NOT NULL
+                           AND TO_CHAR(exit_time, 'YYYY-MM') = $1";
     
-    // ... rest of your code ...
+    $previous_month_result = db_prepare($previous_month_sql, [$previous_month]);
+    $previous_month_data = db_fetch_assoc($previous_month_result);
+    $previous_month_revenue = floatval($previous_month_data['total'] ?? 0);
+
+    // Calculate growth rate
+    $growth_rate = 0;
+    if ($previous_month_revenue > 0) {
+        $growth_rate = (($current_month_revenue - $previous_month_revenue) / $previous_month_revenue) * 100;
+    } elseif ($current_month_revenue > 0) {
+        $growth_rate = 100; // 100% growth if previous was 0
+    }
+
+    // Get total transactions this month
+    $transactions_sql = "SELECT COUNT(*) as count 
+                        FROM parking_logs 
+                        WHERE status = 'exited' 
+                        AND exit_time IS NOT NULL
+                        AND TO_CHAR(exit_time, 'YYYY-MM') = $1";
     
+    $transactions_result = db_prepare($transactions_sql, [$current_month]);
+    $transactions_data = db_fetch_assoc($transactions_result);
+    $total_transactions = intval($transactions_data['count'] ?? 0);
+
+    // Get average daily revenue this month
+    $days_in_month = date('t'); // Number of days in current month
+    $average_daily_revenue = $days_in_month > 0 ? $current_month_revenue / $days_in_month : 0;
+
+    // Get peak hour revenue (highest earning hour)
+    $peak_revenue_sql = "SELECT EXTRACT(HOUR FROM exit_time) as hour, 
+                               COALESCE(SUM(parking_fee), 0) as revenue 
+                        FROM parking_logs 
+                        WHERE status = 'exited' 
+                        AND exit_time IS NOT NULL
+                        AND TO_CHAR(exit_time, 'YYYY-MM') = $1
+                        GROUP BY EXTRACT(HOUR FROM exit_time) 
+                        ORDER BY revenue DESC 
+                        LIMIT 1";
+    
+    $peak_revenue_result = db_prepare($peak_revenue_sql, [$current_month]);
+    $peak_revenue_data = db_fetch_assoc($peak_revenue_result);
+    $peak_revenue = floatval($peak_revenue_data['revenue'] ?? 0);
+
+    // Get daily revenue data for the current month
+    $daily_revenue_sql = "SELECT 
+                            EXTRACT(DAY FROM exit_time)::INTEGER as day,
+                            COALESCE(SUM(parking_fee), 0) as revenue
+                          FROM parking_logs
+                          WHERE status = 'exited'
+                          AND exit_time IS NOT NULL
+                          AND TO_CHAR(exit_time, 'YYYY-MM') = $1
+                          GROUP BY EXTRACT(DAY FROM exit_time)
+                          ORDER BY day";
+    
+    $daily_revenue_result = db_prepare($daily_revenue_sql, [$current_month]);
+    $daily_revenue_data = db_fetch_all($daily_revenue_result);
+
+    // Create arrays for chart data
+    $daily_labels = [];
+    $daily_revenue = [];
+    
+    // Initialize all days with 0
+    for ($i = 1; $i <= $days_in_month; $i++) {
+        $daily_labels[] = 'Day ' . $i;
+        $daily_revenue[] = 0;
+    }
+    
+    // Fill in actual revenue data
+    if ($daily_revenue_data && is_array($daily_revenue_data)) {
+        foreach ($daily_revenue_data as $row) {
+            $day_index = intval($row['day']) - 1;
+            if ($day_index >= 0 && $day_index < $days_in_month) {
+                $daily_revenue[$day_index] = floatval($row['revenue']);
+            }
+        }
+    }
+
+    // Get average transaction value
+    $avg_transaction = $total_transactions > 0 ? $current_month_revenue / $total_transactions : 0;
+
+    // Return JSON response
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'current_month_revenue' => number_format($current_month_revenue, 2, '.', ''),
+        'previous_month_revenue' => number_format($previous_month_revenue, 2, '.', ''),
+        'growth_rate' => round($growth_rate, 2),
+        'total_transactions' => $total_transactions,
+        'average_daily_revenue' => number_format($average_daily_revenue, 2, '.', ''),
+        'average_transaction_value' => number_format($avg_transaction, 2, '.', ''),
+        'peak_revenue' => number_format($peak_revenue, 2, '.', ''),
+        'daily_labels' => $daily_labels,
+        'daily_revenue' => array_map(function($val) {
+            return round($val, 2);
+        }, $daily_revenue)
+    ]);
+
 } catch (Exception $e) {
-    error_log("Analytics Data Error: " . $e->getMessage());
+    error_log("Analytics data error: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    
+    http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Failed to fetch analytics data'
+        'message' => 'Failed to fetch analytics data',
+        'error' => $e->getMessage()
     ]);
 }
 ?>
