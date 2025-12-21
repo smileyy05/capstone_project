@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Create reports folder if it doesn't exist
 $reports_folder = 'reports';
@@ -55,4 +55,5 @@ header('Content-Length: ' . strlen($csv_content));
 echo $csv_content;
 
 exit;
+
 ?>
