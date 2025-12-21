@@ -120,6 +120,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             background: #f0f2f5;
             display: flex;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Sidebar */
@@ -131,6 +132,8 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -182,6 +185,38 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             width: 24px;
         }
 
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1.25rem;
+            left: 1rem;
+            z-index: 101;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobile-menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
         /* Main Content */
         .main-content {
             margin-left: 280px;
@@ -200,6 +235,8 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .top-header h1 {
@@ -207,10 +244,12 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             font-weight: 600;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .top-header h1 i {
-            margin-right: 0.75rem;
+            margin-right: 0.25rem;
         }
 
         .logout-btn {
@@ -223,6 +262,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .logout-btn:hover {
@@ -233,7 +273,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -259,6 +299,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
+            word-wrap: break-word;
         }
 
         .stat-description {
@@ -277,8 +318,8 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         }
 
         .stat-badge.positive {
-            background: #fee2e2;
-            color: #dc2626;
+            background: #dcfce7;
+            color: #16a34a;
         }
 
         .stat-badge.negative {
@@ -302,16 +343,18 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .prediction-section h2 i {
-            margin-right: 0.75rem;
+            margin-right: 0.25rem;
             color: #2563eb;
         }
 
         .prediction-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
@@ -353,6 +396,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            white-space: nowrap;
         }
 
         .predict-btn:hover {
@@ -397,10 +441,12 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .insights-section h2 i {
-            margin-right: 0.75rem;
+            margin-right: 0.25rem;
             color: #f59e0b;
         }
 
@@ -418,20 +464,321 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .insight-box h3 i {
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             color: #2563eb;
         }
 
         .insight-box p {
             color: #6b7280;
             line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        /* Tablet Styles (768px - 1024px) */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .sidebar-header {
+                padding: 0 1.25rem 1.75rem;
+            }
+
+            .sidebar-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .nav-link {
+                padding: 0.75rem 0.875rem;
+                font-size: 0.95rem;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                width: calc(100% - 240px);
+                padding: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+
+            .stat-value {
+                font-size: 2.25rem;
+            }
+
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Mobile Styles (up to 767px) */
+        @media (max-width: 767px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem 1rem;
+            }
+
+            .top-header {
+                padding: 1.25rem 1.5rem 1.25rem 4.5rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .top-header h1 {
+                font-size: 1.4rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .logout-btn {
+                width: 100%;
+                padding: 0.7rem 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .prediction-section,
+            .chart-section,
+            .insights-section {
+                padding: 1.5rem;
+            }
+
+            .prediction-section h2,
+            .insights-section h2 {
+                font-size: 1.3rem;
+            }
+
+            .prediction-form {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .predict-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .chart-section h3 {
+                font-size: 1.1rem;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+
+            .insight-box {
+                padding: 1.25rem;
+            }
+
+            .insight-box h3 {
+                font-size: 1rem;
+            }
+        }
+
+        /* Small Mobile Styles (up to 480px) */
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 260px;
+            }
+
+            .sidebar-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.7rem 0.75rem;
+            }
+
+            .nav-link i {
+                font-size: 1.1rem;
+            }
+
+            .main-content {
+                padding: 1.25rem 0.875rem;
+            }
+
+            .top-header {
+                padding: 1rem 1.25rem 1rem 4rem;
+                border-radius: 10px;
+            }
+
+            .top-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .logout-btn {
+                font-size: 0.9rem;
+                padding: 0.65rem 1rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .stat-label,
+            .stat-description {
+                font-size: 0.8rem;
+            }
+
+            .prediction-section,
+            .chart-section,
+            .insights-section {
+                padding: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .prediction-section h2,
+            .insights-section h2 {
+                font-size: 1.2rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group select {
+                padding: 0.65rem;
+                font-size: 0.95rem;
+            }
+
+            .predict-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.95rem;
+            }
+
+            .chart-section h3 {
+                font-size: 1rem;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+
+            .insight-box {
+                padding: 1rem;
+            }
+
+            .insight-box h3 {
+                font-size: 0.95rem;
+            }
+
+            .insight-box p {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Extra Small Mobile (up to 360px) */
+        @media (max-width: 360px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .mobile-menu-toggle {
+                top: 1rem;
+                left: 0.75rem;
+                padding: 0.5rem 0.7rem;
+                font-size: 1.3rem;
+            }
+
+            .main-content {
+                padding: 1rem 0.75rem;
+            }
+
+            .top-header {
+                padding: 0.875rem 1rem 0.875rem 3.75rem;
+            }
+
+            .top-header h1 {
+                font-size: 1.15rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.6rem;
+            }
+
+            .prediction-section,
+            .chart-section,
+            .insights-section {
+                padding: 1rem;
+            }
+
+            .chart-container {
+                height: 260px;
+            }
+        }
+
+        /* Landscape Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .sidebar {
+                padding: 1rem 0;
+            }
+
+            .sidebar-header {
+                padding: 0 1rem 1rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .sidebar-header h2 {
+                font-size: 1rem;
+            }
+
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .chart-container {
+                height: 240px;
+            }
         }
     </style>
 </head>
 <body>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+    <div class="overlay" onclick="toggleMobileMenu()"></div>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -489,7 +836,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         <div class="top-header">
             <h1>
                 <i class="fas fa-chart-line"></i>
-                Predictive Analytics Dashboard
+                <span>Predictive Analytics Dashboard</span>
             </h1>
             <button class="logout-btn" onclick="window.location.href='admin-logout.php'">
                 LOGOUT
@@ -531,7 +878,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         <div class="prediction-section">
             <h2>
                 <i class="fas fa-chart-line"></i>
-                Revenue Prediction
+                <span>Revenue Prediction</span>
             </h2>
             <form class="prediction-form" id="predictionForm">
                 <div class="form-group">
@@ -569,12 +916,12 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         <div class="insights-section">
             <h2>
                 <i class="fas fa-lightbulb"></i>
-                AI-Powered Insights
+                <span>AI-Powered Insights</span>
             </h2>
-            <div class="insight-box">
+            <div class="insight-box" id="insightBox">
                 <h3>
                     <i class="fas fa-chart-bar"></i>
-                    Waiting for Analysis
+                    <span>Waiting for Analysis</span>
                 </h3>
                 <p>Generate a prediction to receive AI-powered insights about your revenue trends.</p>
             </div>
@@ -582,6 +929,23 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
     </div>
 
     <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 767) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+
         // Chart Data
         const chartLabels = <?php echo json_encode($chart_labels); ?>;
         const chartValues = <?php echo json_encode($chart_values); ?>;
@@ -616,21 +980,21 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
                         position: 'top',
                         labels: {
                             usePointStyle: true,
-                            padding: 15,
+                            padding: window.innerWidth <= 480 ? 10 : 15,
                             font: {
-                                size: 14,
+                                size: window.innerWidth <= 480 ? 11 : 14,
                                 weight: 'bold'
                             }
                         }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
+                        padding: window.innerWidth <= 480 ? 10 : 12,
                         titleFont: {
-                            size: 14
+                            size: window.innerWidth <= 480 ? 12 : 14
                         },
                         bodyFont: {
-                            size: 13
+                            size: window.innerWidth <= 480 ? 11 : 13
                         },
                         callbacks: {
                             label: function(context) {
@@ -647,7 +1011,7 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
                                 return '₱' + value.toFixed(0);
                             },
                             font: {
-                                size: 12
+                                size: window.innerWidth <= 480 ? 10 : 12
                             }
                         },
                         grid: {
@@ -657,8 +1021,10 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
                     x: {
                         ticks: {
                             font: {
-                                size: 12
-                            }
+                                size: window.innerWidth <= 480 ? 10 : 12
+                            },
+                            maxRotation: window.innerWidth <= 480 ? 45 : 0,
+                            minRotation: window.innerWidth <= 480 ? 45 : 0
                         },
                         grid: {
                             display: false
@@ -668,18 +1034,30 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             }
         });
 
+        // Update chart on window resize
+        window.addEventListener('resize', () => {
+            revenueChart.options.plugins.legend.labels.padding = window.innerWidth <= 480 ? 10 : 15;
+            revenueChart.options.plugins.legend.labels.font.size = window.innerWidth <= 480 ? 11 : 14;
+            revenueChart.options.plugins.tooltip.padding = window.innerWidth <= 480 ? 10 : 12;
+            revenueChart.options.plugins.tooltip.titleFont.size = window.innerWidth <= 480 ? 12 : 14;
+            revenueChart.options.plugins.tooltip.bodyFont.size = window.innerWidth <= 480 ? 11 : 13;
+            revenueChart.options.scales.y.ticks.font.size = window.innerWidth <= 480 ? 10 : 12;
+            revenueChart.options.scales.x.ticks.font.size = window.innerWidth <= 480 ? 10 : 12;
+            revenueChart.options.scales.x.ticks.maxRotation = window.innerWidth <= 480 ? 45 : 0;
+            revenueChart.options.scales.x.ticks.minRotation = window.innerWidth <= 480 ? 45 : 0;
+            revenueChart.update();
+        });
+
         function generatePrediction() {
             const period = parseInt(document.getElementById('predictionPeriod').value);
             const growth = parseFloat(document.getElementById('growthRate').value);
             const currentRevenue = <?php echo $current_month_revenue; ?>;
             
-            // Calculate prediction based on period and growth
+            // Calculate prediction
             let predictedRevenue;
             if (period === 1) {
-                // For 1 month, apply growth rate once
                 predictedRevenue = currentRevenue * (1 + (growth / 100));
             } else {
-                // For multiple months, use compound growth
                 predictedRevenue = currentRevenue * Math.pow((1 + (growth / 100)), period);
             }
             
@@ -688,50 +1066,49 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             const avgTransaction = totalTransactions > 0 ? currentRevenue / totalTransactions : 0;
             const projectedTransactions = Math.round(totalTransactions * (1 + (growth / 100)) * period);
             
-            // Update insights with detailed analysis
-            const insightBox = document.querySelector('.insight-box');
+            // Update insights
+            const insightBox = document.getElementById('insightBox');
             insightBox.innerHTML = `
                 <h3>
                     <i class="fas fa-chart-bar"></i>
-                    Revenue Prediction Analysis
+                    <span>Revenue Prediction Analysis</span>
                 </h3>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                     <div>
-                        <p style="margin-bottom: 0.5rem;"><strong>Current Month Revenue:</strong></p>
+                        <p style="margin-bottom: 0.5rem;"><strong>Current Revenue:</strong></p>
                         <p style="font-size: 1.5rem; color: #2563eb; font-weight: 700;">₱${currentRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                     </div>
                     <div>
-                        <p style="margin-bottom: 0.5rem;"><strong>Predicted Revenue (${period} month${period > 1 ? 's' : ''}):</strong></p>
+                        <p style="margin-bottom: 0.5rem;"><strong>Predicted (${period}mo):</strong></p>
                         <p style="font-size: 1.5rem; color: #10b981; font-weight: 700;">₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                     </div>
                 </div>
                 
                 <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <p style="margin-bottom: 0.5rem;"><strong>Expected Growth:</strong> ${growth}% per month</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Total Growth Amount:</strong> ₱${growthAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Current Transactions:</strong> ${totalTransactions.toLocaleString()}</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Projected Transactions:</strong> ${projectedTransactions.toLocaleString()}</p>
-                    <p><strong>Average Transaction Value:</strong> ₱${avgTransaction.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p style="margin-bottom: 0.5rem; font-size: 0.9rem;"><strong>Growth Rate:</strong> ${growth}% per month</p>
+                    <p style="margin-bottom: 0.5rem; font-size: 0.9rem;"><strong>Growth Amount:</strong> ₱${growthAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <p style="margin-bottom: 0.5rem; font-size: 0.9rem;"><strong>Transactions:</strong> ${totalTransactions.toLocaleString()} → ${projectedTransactions.toLocaleString()}</p>
+                    <p style="font-size: 0.9rem;"><strong>Avg Transaction:</strong> ₱${avgTransaction.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
                 </div>
                 
                 <div style="padding: 1rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 8px; border-left: 4px solid #2563eb;">
-                    <p style="line-height: 1.6; color: #1f2937;">
-                        <strong>📊 Analysis:</strong> Based on a ${growth}% monthly growth rate, your parking facility is projected to earn approximately 
-                        <strong>₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong> over the next ${period} month${period > 1 ? 's' : ''}. 
-                        This represents a <strong>${((growthAmount / currentRevenue) * 100).toFixed(1)}%</strong> increase from your current monthly revenue.
+                    <p style="line-height: 1.6; color: #1f2937; font-size: 0.95rem; margin-bottom: 0.75rem;">
+                        <strong>📊 Analysis:</strong> Based on ${growth}% monthly growth, projected revenue is 
+                        <strong>₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong> over ${period} month${period > 1 ? 's' : ''}. 
+                        This is a <strong>${((growthAmount / currentRevenue) * 100).toFixed(1)}%</strong> increase.
                     </p>
-                    <p style="margin-top: 1rem; line-height: 1.6; color: #1f2937;">
-                        ${growth >= 15 ? '🚀 <strong>High Growth Scenario:</strong> This ambitious growth target suggests strong market conditions. Focus on maintaining service quality and consider capacity expansion to meet increased demand.' : 
-                          growth >= 10 ? '📈 <strong>Moderate Growth Scenario:</strong> This represents healthy, sustainable growth. Consider optimizing peak hours and implementing dynamic pricing to maximize revenue potential.' : 
-                          '📉 <strong>Conservative Growth Scenario:</strong> While modest, this projection ensures stability. Consider promotional strategies, loyalty programs, or partnerships to accelerate growth.'}
+                    <p style="line-height: 1.6; color: #1f2937; font-size: 0.95rem; margin-bottom: 0.75rem;">
+                        ${growth >= 15 ? '🚀 <strong>High Growth:</strong> Ambitious target. Focus on service quality and capacity expansion.' : 
+                          growth >= 10 ? '📈 <strong>Moderate Growth:</strong> Healthy growth. Optimize peak hours and pricing.' : 
+                          '📉 <strong>Conservative Growth:</strong> Stable projection. Consider promotional strategies.'}
                     </p>
-                    <p style="margin-top: 1rem; line-height: 1.6; color: #1f2937;">
-                        💡 <strong>Recommendation:</strong> Monitor daily revenue trends closely and adjust strategies based on actual performance. Peak hour optimization and customer retention programs can help achieve these projections.
+                    <p style="line-height: 1.6; color: #1f2937; font-size: 0.95rem;">
+                        💡 <strong>Tip:</strong> Monitor trends and adjust strategies based on performance.
                     </p>
                 </div>
             `;
             
-            // Show success message briefly
+            // Success feedback
             const btn = document.querySelector('.predict-btn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-check"></i> Prediction Generated!';
