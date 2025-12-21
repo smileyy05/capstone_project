@@ -13,7 +13,7 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Helper function to send JSON response and exit
 function send_json($data) {
@@ -100,4 +100,5 @@ send_json([
         'created_at' => $customer['created_at']
     ]
 ]);
+
 ?>
