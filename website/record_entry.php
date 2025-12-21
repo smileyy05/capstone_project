@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 header('Content-Type: application/json');
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 $qr_code = $data['qr_code'] ?? null;
@@ -133,4 +133,5 @@ try {
         "message" => "Entry failed: " . $e->getMessage()
     ]);
 }
+
 ?>
