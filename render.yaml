@@ -10,34 +10,23 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: DB_HOST
-        fromDatabase:
-          name: southwoods-parking-db
-          property: host
+        value: dpg-d535i5emcj7s73dvkak0-a.oregon-postgres.render.com
       - key: DB_PORT
-        fromDatabase:
-          name: southwoods-parking-db
-          property: port
+        value: 5432
       - key: DB_NAME
-        fromDatabase:
-          name: southwoods-parking-db
-          property: database
+        value: parking_system_3q8a
       - key: DB_USERNAME
-        fromDatabase:
-          name: southwoods-parking-db
-          property: user
+        value: smartparking
       - key: DB_PASSWORD
-        fromDatabase:
-          name: southwoods-parking-db
-          property: password
+        value: uRyGLGgInAJk39zjBKwIKYYD3VldkIsZ
       - key: PORT
         value: 10000
+      - key: APP_NAME
+        value: Southwoods Parking System
+      - key: APP_TIMEZONE
+        value: Asia/Manila
+      - key: SESSION_LIFETIME
+        value: 7200
+      - key: SESSION_SECURE
+        value: true
     healthCheckPath: /health-check.php
-
-databases:
-  # PostgreSQL Database
-  - name: southwoods-parking-db
-    databaseName: parking_system_3q8a
-    user: smartparking
-    region: oregon
-    plan: free
-    ipAllowList: []
