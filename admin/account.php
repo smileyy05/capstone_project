@@ -8,7 +8,7 @@ if (!isset($_SESSION['customer_id'])) {
 }
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Get customer ID from session
 $customer_id = $_SESSION['customer_id'];
@@ -423,4 +423,5 @@ $qr_data = $qr_code; // Use the stored QR code from database
     });
   </script>
 </body>
+
 </html>
