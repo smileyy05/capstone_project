@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 try {
     // Get current slot status
@@ -39,4 +39,5 @@ try {
         'message' => 'Failed to fetch parking slot data'
     ]);
 }
+
 ?>
