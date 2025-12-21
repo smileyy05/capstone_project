@@ -2,7 +2,7 @@
 session_start();
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -61,4 +61,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Connection will be closed automatically at script end
 // or you can explicitly call db_close() if needed
+
 ?>
