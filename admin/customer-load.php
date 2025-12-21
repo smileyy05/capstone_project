@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once "DB/DB_connection.php"; // PostgreSQL connection
+session_start();require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Initialize messages
 $success = "";
@@ -147,4 +146,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
   </div>
 </body>
+
 </html>
