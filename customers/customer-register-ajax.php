@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Get POST data
 $name = trim($_POST['name'] ?? '');
@@ -70,4 +70,5 @@ if ($result) {
 }
 
 // Connection will be closed automatically at script end
+
 ?>
