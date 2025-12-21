@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 $success = '';
 $error = '';
@@ -475,4 +475,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
   </script>
 </body>
+
 </html>
