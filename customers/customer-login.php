@@ -16,7 +16,7 @@ unset($_SESSION['login_error']);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Login</title>
+  <title>Customer Login - Southwoods Parking</title>
   <style>
     * {
       margin: 0;
@@ -46,19 +46,64 @@ unset($_SESSION['login_error']);
       justify-content: center;
       padding: 3rem;
       position: relative;
+      overflow: hidden;
     }
     
-    .login-left img {
-      width: 100%;
-      max-width: 650px;
-      border-radius: 24px;
-      object-fit: cover;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    .login-left::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('../img/southwoods_bg.jpg') no-repeat center center;
+      background-size: cover;
       transition: transform 0.3s ease;
     }
     
-    .login-left img:hover {
-      transform: scale(1.02);
+    .login-left:hover::before {
+      transform: scale(1.05);
+    }
+    
+    .login-left::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+    }
+    
+    .logo-overlay {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    .logo-overlay img {
+      width: 180px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .logo-overlay h1 {
+      font-size: 1.5rem;
+      color: #1e5bb8;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .logo-overlay p {
+      font-size: 1rem;
+      color: #4a5568;
+      font-weight: 500;
     }
     
     .login-right {
@@ -120,6 +165,18 @@ unset($_SESSION['login_error']);
       font-weight: 600;
       font-size: 0.95rem;
       border: 2px solid #fca5a5;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .form-group {
@@ -226,8 +283,12 @@ unset($_SESSION['login_error']);
         padding: 2rem;
       }
       
-      .login-left img {
-        max-width: 500px;
+      .logo-overlay img {
+        width: 150px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1.3rem;
       }
       
       .login-right {
@@ -237,12 +298,24 @@ unset($_SESSION['login_error']);
     
     @media (max-width: 768px) {
       .login-left {
-        min-height: 30vh;
+        min-height: 35vh;
         padding: 1.5rem;
       }
       
-      .login-left img {
-        max-width: 400px;
+      .logo-overlay {
+        padding: 1.5rem;
+      }
+      
+      .logo-overlay img {
+        width: 120px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1.2rem;
+      }
+      
+      .logo-overlay p {
+        font-size: 0.9rem;
       }
       
       .login-right {
@@ -280,7 +353,11 @@ unset($_SESSION['login_error']);
 <body>
   <div class="login-container">
     <div class="login-left">
-      <img src="../img/southwoods_bg.jpg" alt="Southwoods Mall" onerror="this.src='https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&h=600&fit=crop'">
+      <div class="logo-overlay">
+        <img src="../img/Without-Background.png" alt="Southwoods Logo">
+        <h1>SOUTHWOODS MALL</h1>
+        <p>Smart Parking System</p>
+      </div>
     </div>
     
     <div class="login-right">
@@ -305,7 +382,7 @@ unset($_SESSION['login_error']);
           
           <button type="submit" class="login-btn">Login</button>
           <a href="customer-register.php" class="register-link">Don't have an account? Register</a>
-          <a href="/index.php" class="back-link">Back to Main</a>
+          <a href="../website/index.php" class="back-link">Back to Main</a>
         </form>
       </div>
     </div>
