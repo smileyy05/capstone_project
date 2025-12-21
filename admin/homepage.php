@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Debug</title>
+  <title>Admin Login - Southwoods Parking</title>
   <style>
     * {
       margin: 0;
@@ -96,26 +96,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       justify-content: center;
       padding: 3rem;
       position: relative;
+      overflow: hidden;
     }
     
-    .login-left img {
-      width: 100%;
-      max-width: 650px;
-      border-radius: 24px;
-      object-fit: cover;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    .login-left::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('../img/southwoods_bg.jpg') no-repeat center center;
+      background-size: cover;
       transition: transform 0.3s ease;
     }
     
-    .login-left img:hover {
-      transform: scale(1.02);
+    .login-left:hover::before {
+      transform: scale(1.05);
+    }
+    
+    .login-left::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(30, 91, 184, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+    }
+    
+    .logo-overlay {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      max-width: 400px;
+    }
+    
+    .logo-overlay img {
+      width: 180px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .logo-overlay h1 {
+      font-size: 1.5rem;
+      color: #1e5bb8;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+      line-height: 1.3;
+    }
+    
+    .logo-overlay p {
+      font-size: 1rem;
+      color: #4a5568;
+      font-weight: 500;
+    }
+    
+    .admin-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #1e5bb8 0%, #2563eb 100%);
+      color: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-top: 1rem;
+      text-transform: uppercase;
     }
     
     .login-right {
       flex: 1;
       background: linear-gradient(135deg, #1e5bb8 0%, #2563eb 100%);
       color: #fff;
-      padding: 3rem 3rem;
+      padding: 3rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -170,6 +230,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       font-weight: 600;
       font-size: 0.95rem;
       border: 2px solid #fca5a5;
+      animation: slideDown 0.3s ease;
+      word-break: break-word;
     }
     
     .msg-debug {
@@ -182,6 +244,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       font-weight: 600;
       font-size: 0.85rem;
       border: 2px solid #7dd3fc;
+      animation: slideDown 0.3s ease;
+      word-break: break-word;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .form-group {
@@ -278,6 +353,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       font-size: 1.3rem;
     }
     
+    /* Tablet Landscape */
     @media (max-width: 1024px) {
       .login-container {
         flex-direction: column;
@@ -288,23 +364,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         padding: 2rem;
       }
       
-      .login-left img {
-        max-width: 500px;
+      .logo-overlay {
+        padding: 2rem;
+        max-width: 350px;
+      }
+      
+      .logo-overlay img {
+        width: 150px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1.3rem;
       }
       
       .login-right {
         padding: 3rem 2rem;
       }
+      
+      .login-right h2 {
+        font-size: 1.75rem;
+      }
     }
     
+    /* Tablet Portrait */
     @media (max-width: 768px) {
       .login-left {
-        min-height: 30vh;
+        min-height: 35vh;
         padding: 1.5rem;
       }
       
-      .login-left img {
-        max-width: 400px;
+      .logo-overlay {
+        padding: 1.75rem;
+        max-width: 320px;
+      }
+      
+      .logo-overlay img {
+        width: 130px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1.2rem;
+      }
+      
+      .logo-overlay p {
+        font-size: 0.9rem;
+      }
+      
+      .admin-badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 1rem;
       }
       
       .login-right {
@@ -313,18 +421,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       .login-right h2 {
         font-size: 1.5rem;
+        letter-spacing: 1px;
       }
       
       .login-right .subtitle {
         font-size: 1rem;
         margin-bottom: 2rem;
       }
+      
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
     }
     
+    /* Mobile Large */
     @media (max-width: 480px) {
+      .login-left {
+        min-height: 30vh;
+        padding: 1rem;
+      }
+      
+      .logo-overlay {
+        padding: 1.5rem;
+        max-width: 280px;
+        border-radius: 20px;
+      }
+      
+      .logo-overlay img {
+        width: 110px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1.1rem;
+        margin-bottom: 0.4rem;
+      }
+      
+      .logo-overlay p {
+        font-size: 0.85rem;
+      }
+      
+      .admin-badge {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.85rem;
+        margin-top: 0.75rem;
+      }
+      
+      .login-right {
+        padding: 2rem 1.25rem;
+      }
+      
       .login-right h2 {
         font-size: 1.3rem;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+      }
+      
+      .login-right .subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.75rem;
+      }
+      
+      .login-form-wrapper {
+        max-width: 100%;
+      }
+      
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      
+      .form-group label {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
       }
       
       .form-group input {
@@ -336,19 +503,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         padding: 1rem;
         font-size: 1rem;
       }
+      
+      .back-link {
+        padding: 0.85rem;
+        font-size: 0.95rem;
+      }
+      
+      .msg-error, .msg-debug {
+        padding: 0.85rem;
+        font-size: 0.85rem;
+      }
+    }
+    
+    /* Mobile Small */
+    @media (max-width: 360px) {
+      .logo-overlay {
+        padding: 1.25rem;
+        max-width: 260px;
+      }
+      
+      .logo-overlay img {
+        width: 100px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1rem;
+      }
+      
+      .logo-overlay p {
+        font-size: 0.8rem;
+      }
+      
+      .login-right {
+        padding: 1.75rem 1rem;
+      }
+      
+      .login-right h2 {
+        font-size: 1.2rem;
+      }
+      
+      .login-right .subtitle {
+        font-size: 0.9rem;
+      }
+      
+      .form-group input {
+        padding: 0.75rem 0.9rem;
+        font-size: 0.9rem;
+      }
+      
+      .login-btn, .back-link {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Landscape orientation fix for mobile */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .login-container {
+        flex-direction: row;
+      }
+      
+      .login-left {
+        min-height: 100vh;
+        flex: 0.8;
+      }
+      
+      .login-right {
+        flex: 1.2;
+        padding: 2rem 1.5rem;
+      }
+      
+      .logo-overlay {
+        padding: 1.5rem;
+        max-width: 280px;
+      }
+      
+      .logo-overlay img {
+        width: 100px;
+      }
+      
+      .logo-overlay h1 {
+        font-size: 1.1rem;
+      }
+      
+      .login-right h2 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .login-right .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      
+      .form-group input {
+        padding: 0.7rem 1rem;
+      }
+      
+      .login-btn, .back-link {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="login-container">
     <div class="login-left">
-      <img src="southwoods_bg.jpg" alt="Southwoods Mall" onerror="this.src='https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&h=600&fit=crop'">
+      <div class="logo-overlay">
+        <img src="../img/Without-Background.png" alt="Southwoods Logo">
+        <h1>SOUTHWOODS MALL</h1>
+        <p>Smart Parking System</p>
+        <span class="admin-badge">Admin Portal</span>
+      </div>
     </div>
     
     <div class="login-right">
       <div class="login-form-wrapper">
-        <h2>Southwoods Smart Parking System</h2>
-        <p class="subtitle">Admin Login (Debug Mode)</p>
+        <h2>Admin Login</h2>
+        <p class="subtitle">Secure Access to Dashboard</p>
         
         <?php if($debug): ?>
           <div class="msg-debug"><?php echo htmlspecialchars($debug); ?></div>
@@ -370,7 +647,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           
           <button type="submit" class="login-btn">Login</button>
-          <a href="/index.php" class="back-link">Back to Main</a>
+          <a href="../website/index.php" class="back-link">Back to Main</a>
         </form>
       </div>
     </div>
