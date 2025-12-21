@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Delete all parking logs
 $delete_sql = "DELETE FROM parking_logs";
@@ -36,4 +36,5 @@ echo json_encode([
     'success' => true,
     'message' => 'All parking logs cleared, slots reset to 50, balances reset to 500'
 ]);
+
 ?>
