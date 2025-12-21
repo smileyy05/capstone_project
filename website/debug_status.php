@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 
 // Include database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Get all customers with their latest parking log status
 $sql = "SELECT 
@@ -44,4 +44,5 @@ echo json_encode([
     'data' => $data,
     'total_customers' => count($data)
 ], JSON_PRETTY_PRINT);
+
 ?>
