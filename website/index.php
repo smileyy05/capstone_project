@@ -11,7 +11,8 @@
     }
     
     body {
-      background: linear-gradient(135deg, #e8eef5 0%, #b8d4f1 100%);
+      background: url('../img/southwoods_bg.jpg') no-repeat center center fixed;
+      background-size: cover;
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
       min-height: 100vh;
@@ -19,12 +20,25 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 0;
     }
     
     .main-landing {
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
       border-radius: 24px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       padding: 3.5rem 3rem;
       max-width: 480px;
       width: 100%;
@@ -32,6 +46,8 @@
       flex-direction: column;
       align-items: center;
       gap: 1rem;
+      position: relative;
+      z-index: 1;
     }
     
     .main-landing .logo {
@@ -146,7 +162,7 @@
 </head>
 <body>
   <div class="main-landing">
-    <img src="Without-Background.png" alt="Southwoods Mall Logo" class="logo">
+    <img src="../img/Without-Background.png" alt="Southwoods Mall Logo" class="logo">
     <h1>SOUTHWOODS SMART PARKING SYSTEM</h1>
     <p>Welcome! Choose an option below to get started.</p>
     <div class="btn-group">
