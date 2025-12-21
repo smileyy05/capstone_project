@@ -669,30 +669,77 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         });
 
         function generatePrediction() {
-            const period = document.getElementById('predictionPeriod').value;
-            const growth = document.getElementById('growthRate').value;
+            const period = parseInt(document.getElementById('predictionPeriod').value);
+            const growth = parseFloat(document.getElementById('growthRate').value);
             const currentRevenue = <?php echo $current_month_revenue; ?>;
             
-            // Calculate prediction
-            const predictedRevenue = currentRevenue * (1 + (growth / 100));
+            // Calculate prediction based on period and growth
+            let predictedRevenue;
+            if (period === 1) {
+                // For 1 month, apply growth rate once
+                predictedRevenue = currentRevenue * (1 + (growth / 100));
+            } else {
+                // For multiple months, use compound growth
+                predictedRevenue = currentRevenue * Math.pow((1 + (growth / 100)), period);
+            }
             
-            // Update insights
+            const growthAmount = predictedRevenue - currentRevenue;
+            const totalTransactions = <?php echo $total_transactions; ?>;
+            const avgTransaction = totalTransactions > 0 ? currentRevenue / totalTransactions : 0;
+            const projectedTransactions = Math.round(totalTransactions * (1 + (growth / 100)) * period);
+            
+            // Update insights with detailed analysis
             const insightBox = document.querySelector('.insight-box');
             insightBox.innerHTML = `
                 <h3>
                     <i class="fas fa-chart-bar"></i>
                     Revenue Prediction Analysis
                 </h3>
-                <p><strong>Current Month Revenue:</strong> ₱${currentRevenue.toFixed(2)}</p>
-                <p><strong>Predicted Revenue (${period} month${period > 1 ? 's' : ''}):</strong> ₱${predictedRevenue.toFixed(2)}</p>
-                <p><strong>Expected Growth:</strong> ${growth}% (₱${(predictedRevenue - currentRevenue).toFixed(2)})</p>
-                <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
-                    Based on the ${growth}% growth rate, your parking facility is projected to earn approximately 
-                    ₱${predictedRevenue.toFixed(2)} in the next ${period} month${period > 1 ? 's' : ''}. 
-                    ${growth >= 10 ? 'This represents strong growth potential. Consider optimizing peak hours to maximize revenue.' : 
-                    'Consider implementing promotional strategies to boost growth.'}
-                </p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <p style="margin-bottom: 0.5rem;"><strong>Current Month Revenue:</strong></p>
+                        <p style="font-size: 1.5rem; color: #2563eb; font-weight: 700;">₱${currentRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                    <div>
+                        <p style="margin-bottom: 0.5rem;"><strong>Predicted Revenue (${period} month${period > 1 ? 's' : ''}):</strong></p>
+                        <p style="font-size: 1.5rem; color: #10b981; font-weight: 700;">₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <p style="margin-bottom: 0.5rem;"><strong>Expected Growth:</strong> ${growth}% per month</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Total Growth Amount:</strong> ₱${growthAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Current Transactions:</strong> ${totalTransactions.toLocaleString()}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Projected Transactions:</strong> ${projectedTransactions.toLocaleString()}</p>
+                    <p><strong>Average Transaction Value:</strong> ₱${avgTransaction.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                </div>
+                
+                <div style="padding: 1rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 8px; border-left: 4px solid #2563eb;">
+                    <p style="line-height: 1.6; color: #1f2937;">
+                        <strong>📊 Analysis:</strong> Based on a ${growth}% monthly growth rate, your parking facility is projected to earn approximately 
+                        <strong>₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong> over the next ${period} month${period > 1 ? 's' : ''}. 
+                        This represents a <strong>${((growthAmount / currentRevenue) * 100).toFixed(1)}%</strong> increase from your current monthly revenue.
+                    </p>
+                    <p style="margin-top: 1rem; line-height: 1.6; color: #1f2937;">
+                        ${growth >= 15 ? '🚀 <strong>High Growth Scenario:</strong> This ambitious growth target suggests strong market conditions. Focus on maintaining service quality and consider capacity expansion to meet increased demand.' : 
+                          growth >= 10 ? '📈 <strong>Moderate Growth Scenario:</strong> This represents healthy, sustainable growth. Consider optimizing peak hours and implementing dynamic pricing to maximize revenue potential.' : 
+                          '📉 <strong>Conservative Growth Scenario:</strong> While modest, this projection ensures stability. Consider promotional strategies, loyalty programs, or partnerships to accelerate growth.'}
+                    </p>
+                    <p style="margin-top: 1rem; line-height: 1.6; color: #1f2937;">
+                        💡 <strong>Recommendation:</strong> Monitor daily revenue trends closely and adjust strategies based on actual performance. Peak hour optimization and customer retention programs can help achieve these projections.
+                    </p>
+                </div>
             `;
+            
+            // Show success message briefly
+            const btn = document.querySelector('.predict-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Prediction Generated!';
+            btn.style.background = '#10b981';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
         }
     </script>
 </body>
