@@ -43,6 +43,23 @@ $result = db_query($sql);
       min-height: 100vh;
     }
     
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1001;
+      background: #1e5bb8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
     .admin-sidebar {
       background: linear-gradient(180deg, #1e5bb8 0%, #1651c6 100%);
       color: #fff;
@@ -52,6 +69,9 @@ $result = db_query($sql);
       flex-direction: column;
       align-items: flex-start;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      position: relative;
+      z-index: 100;
     }
     
     .admin-sidebar h3 {
@@ -99,6 +119,7 @@ $result = db_query($sql);
       flex: 1;
       background: #f3f4f6;
       min-height: 100vh;
+      width: 100%;
     }
     
     .admin-header {
@@ -110,6 +131,7 @@ $result = db_query($sql);
       padding: 1.5rem 2.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       gap: 1rem;
+      flex-wrap: wrap;
     }
     
     .admin-header input[type="text"] {
@@ -138,6 +160,7 @@ $result = db_query($sql);
       cursor: pointer;
       transition: all 0.3s ease;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     
     .admin-header button:hover {
@@ -186,6 +209,7 @@ $result = db_query($sql);
       color: #1a1a1a;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     
     .vehicle-table td {
@@ -229,6 +253,7 @@ $result = db_query($sql);
       cursor: pointer;
       transition: all 0.3s ease;
       letter-spacing: 0.3px;
+      white-space: nowrap;
     }
     
     .btn-view:hover {
@@ -253,7 +278,107 @@ $result = db_query($sql);
       font-size: 1rem;
     }
     
+    /* Mobile card view */
+    .mobile-card-view {
+      display: none;
+    }
+    
+    .customer-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .customer-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .customer-card-header h3 {
+      font-size: 1.1rem;
+      color: #1f2937;
+      margin: 0;
+      flex: 1;
+    }
+    
+    .customer-card-info {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      gap: 1rem;
+    }
+    
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    
+    .info-value {
+      color: #1f2937;
+      font-size: 0.9rem;
+      text-align: right;
+      word-break: break-word;
+    }
+    
+    .qr-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .card-actions button {
+      flex: 1;
+    }
+    
+    /* Overlay for mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    
+    .sidebar-overlay.active {
+      display: block;
+    }
+    
+    /* Tablet responsive */
     @media (max-width: 1024px) {
+      .admin-sidebar {
+        width: 200px;
+      }
+      
       .vehicle-table {
         font-size: 0.85rem;
       }
@@ -262,42 +387,116 @@ $result = db_query($sql);
       .vehicle-table td {
         padding: 0.875rem 1rem;
       }
+      
+      .admin-content {
+        padding: 2rem;
+      }
     }
     
+    /* Mobile responsive */
     @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      
       .admin-sidebar {
-        width: 80px;
-        padding: 1.5rem 0.5rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+      
+      .admin-sidebar.active {
+        transform: translateX(0);
       }
       
       .admin-sidebar h3 {
-        font-size: 0.75rem;
-        margin-bottom: 1.5rem;
-        text-align: center;
-        width: 100%;
-      }
-      
-      .admin-sidebar nav a {
-        font-size: 0.85rem;
-        padding: 0.7rem 0.5rem;
-        justify-content: center;
-        gap: 0.5rem;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
       }
       
       .admin-header {
-        padding: 1.2rem 1.5rem;
-        flex-wrap: wrap;
+        padding: 1rem;
+        padding-top: 4rem;
+        flex-direction: column;
+        align-items: stretch;
       }
       
       .admin-header input[type="text"] {
         width: 100%;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      
+      .admin-header button {
+        width: 100%;
+        padding: 0.7rem;
       }
       
       .admin-content {
-        padding: 1.5rem;
+        padding: 1rem;
       }
       
+      /* Hide table, show cards on mobile */
+      .vehicle-table-container {
+        display: none;
+      }
+      
+      .mobile-card-view {
+        display: block;
+      }
+    }
+    
+    /* Small mobile devices */
+    @media (max-width: 480px) {
+      .admin-sidebar {
+        width: 220px;
+      }
+      
+      .customer-card {
+        padding: 1rem;
+      }
+      
+      .customer-card-header h3 {
+        font-size: 1rem;
+      }
+      
+      .info-row {
+        font-size: 0.85rem;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      
+      .info-value {
+        text-align: left;
+      }
+      
+      .btn-view {
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+      }
+    }
+    
+    /* Landscape mobile orientation */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .admin-sidebar {
+        padding: 1rem 0.75rem;
+      }
+      
+      .admin-sidebar h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+      }
+      
+      .admin-sidebar a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+      }
+    }
+    
+    /* Desktop table view only */
+    @media (min-width: 769px) {
       .vehicle-table-container {
         overflow-x: auto;
       }
@@ -309,8 +508,11 @@ $result = db_query($sql);
   </style>
 </head>
 <body>
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  
   <div class="admin-dashboard">
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="sidebar">
       <h3>SOUTHWOODS<br>MALL</h3>
       <nav>
         <a href="admin-dashboard.php">🏠 Home</a>
@@ -335,6 +537,7 @@ $result = db_query($sql);
           <div class="msg-success"><?php echo $success; ?></div>
         <?php endif; ?>
         
+        <!-- Desktop Table View -->
         <div class="vehicle-table-container">
           <table class="vehicle-table" id="vehicleTable">
             <thead>
@@ -385,14 +588,72 @@ $result = db_query($sql);
             </tbody>
           </table>
         </div>
+        
+        <!-- Mobile Card View -->
+        <div class="mobile-card-view" id="mobileCardView">
+          <?php
+          // Reset result pointer for card view
+          $result2 = db_query($sql);
+          if ($result2 && db_num_rows($result2) > 0) {
+              while($row = db_fetch_assoc($result2)) {
+                  $id = $row['id'] ?? '';
+                  $name = $row['name'] ?? 'N/A';
+                  $email = $row['email'] ?? 'N/A';
+                  $plate = $row['plate'] ?? 'N/A';
+                  $vehicle_type = $row['vehicle'] ?? 'N/A';
+                  $balance = $row['balance'] ?? 0;
+                  $created_at = $row['created_at'] ?? date('Y-m-d H:i:s');
+                  $qr_data = $id . '-' . $plate;
+                  
+                  echo "<div class='customer-card' data-searchable='" . htmlspecialchars(strtolower($name . ' ' . $email . ' ' . $plate . ' ' . $vehicle_type)) . "'>";
+                  echo "<div class='customer-card-header'>";
+                  echo "<h3>" . htmlspecialchars($name) . "</h3>";
+                  echo "</div>";
+                  echo "<div class='customer-card-info'>";
+                  echo "<div class='info-row'><span class='info-label'>Email:</span><span class='info-value'>" . htmlspecialchars($email) . "</span></div>";
+                  echo "<div class='info-row'><span class='info-label'>Plate Number:</span><span class='info-value'>" . htmlspecialchars($plate) . "</span></div>";
+                  echo "<div class='info-row'><span class='info-label'>Vehicle Type:</span><span class='info-value'>" . htmlspecialchars($vehicle_type) . "</span></div>";
+                  echo "<div class='info-row'><span class='info-label'>Balance:</span><span class='info-value balance-positive'>₱" . number_format($balance, 2) . "</span></div>";
+                  echo "<div class='info-row'><span class='info-label'>Created:</span><span class='info-value'>" . date('M d, Y', strtotime($created_at)) . "</span></div>";
+                  echo "<div class='qr-card'><img src='https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=" . urlencode($qr_data) . "' alt='QR Code'></div>";
+                  echo "</div>";
+                  echo "<div class='card-actions'>";
+                  echo "<button class='btn-view' onclick='viewCustomer(" . $id . ")'>View Details</button>";
+                  echo "</div>";
+                  echo "</div>";
+              }
+          } else {
+              echo "<div class='empty-state'><h3>No Customers Yet</h3><p>No customers have registered in the system.</p></div>";
+          }
+          ?>
+        </div>
       </div>
     </main>
   </div>
   
   <script>
+    // Toggle sidebar for mobile
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+    
+    // Close sidebar when clicking on a link (mobile)
+    document.querySelectorAll('.admin-sidebar a').forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+          toggleSidebar();
+        }
+      });
+    });
+    
     // Search functionality
     document.getElementById('searchInput').addEventListener('input', function() {
       const filter = this.value.toLowerCase();
+      
+      // Search in table view
       const rows = document.querySelectorAll('#vehicleTable tbody tr');
       rows.forEach(row => {
         const hasEmptyState = row.querySelector('.empty-state');
@@ -400,13 +661,29 @@ $result = db_query($sql);
           row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
         }
       });
+      
+      // Search in card view
+      const cards = document.querySelectorAll('.customer-card');
+      cards.forEach(card => {
+        const searchable = card.getAttribute('data-searchable') || '';
+        card.style.display = searchable.includes(filter) ? '' : 'none';
+      });
     });
     
     // View customer details
     function viewCustomer(id) {
       window.location.href = 'admin-view-user.php?id=' + id;
     }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
   </script>
 </body>
-
 </html>
