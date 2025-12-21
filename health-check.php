@@ -3,7 +3,6 @@
  * Health Check Endpoint for Render
  * This endpoint is used by Render to monitor the application health
  */
-
 header('Content-Type: application/json');
 
 $health_status = [
@@ -18,9 +17,9 @@ try {
         'status' => 'ok',
         'version' => PHP_VERSION
     ];
-
+    
     // Check database connection
-    require_once '../DB/DB_connection.php';
+    require_once __DIR__ . '/DB/DB_connection.php';
     
     if ($conn) {
         // Test database with a simple query
@@ -40,7 +39,7 @@ try {
     } else {
         throw new Exception('Database connection failed');
     }
-
+    
     // Check required PHP extensions
     $required_extensions = ['pgsql', 'pdo', 'pdo_pgsql', 'json', 'mbstring'];
     $missing_extensions = [];
@@ -62,7 +61,7 @@ try {
             'missing' => $missing_extensions
         ];
     }
-
+    
     // Check write permissions (for logs, uploads, etc.)
     $writable_dirs = ['logs', 'tmp', 'cache'];
     $permission_issues = [];
@@ -83,11 +82,11 @@ try {
             'non_writable' => $permission_issues
         ];
     }
-
+    
     // Overall status
     $health_status['status'] = 'healthy';
     http_response_code(200);
-
+    
 } catch (Exception $e) {
     $health_status['status'] = 'unhealthy';
     $health_status['error'] = $e->getMessage();
