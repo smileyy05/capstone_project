@@ -73,6 +73,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       background: #f3f4f6;
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      overflow-x: hidden;
     }
     
     .admin-dashboard {
@@ -80,6 +81,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       min-height: 100vh;
     }
     
+    /* Sidebar Styles */
     .admin-sidebar {
       background: linear-gradient(180deg, #1e5bb8 0%, #1651c6 100%);
       color: #fff;
@@ -89,6 +91,13 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       flex-direction: column;
       align-items: flex-start;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
     }
     
     .admin-sidebar h3 {
@@ -132,10 +141,45 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       background: rgba(255, 255, 255, 0.15);
     }
     
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1.25rem;
+      left: 1rem;
+      z-index: 101;
+      background: #1e5bb8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .mobile-menu-toggle:active {
+      transform: scale(0.95);
+    }
+    
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+    
+    /* Main Content */
     .admin-main {
       flex: 1;
       background: #f3f4f6;
       min-height: 100vh;
+      margin-left: 240px;
+      width: calc(100% - 240px);
     }
     
     .admin-header {
@@ -147,6 +191,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       padding: 1.5rem 2.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       gap: 1rem;
+      flex-wrap: wrap;
     }
     
     .admin-header .back-btn {
@@ -162,6 +207,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       letter-spacing: 0.5px;
       text-decoration: none;
       display: inline-block;
+      white-space: nowrap;
     }
     
     .admin-header .back-btn:hover {
@@ -182,6 +228,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       cursor: pointer;
       transition: all 0.3s ease;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     
     .admin-header button:hover {
@@ -239,22 +286,26 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       border: 2px solid #e2e8f0;
       border-radius: 12px;
       padding: 0.5rem;
+      flex-shrink: 0;
     }
     
     .user-basic-info {
       flex: 1;
+      min-width: 0;
     }
     
     .user-basic-info h2 {
       color: #1e5bb8;
       font-size: 1.8rem;
       margin-bottom: 0.5rem;
+      word-wrap: break-word;
     }
     
     .user-basic-info p {
       color: #64748b;
       font-size: 1rem;
       margin-bottom: 0.3rem;
+      word-wrap: break-word;
     }
     
     .user-details-grid {
@@ -285,6 +336,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       font-size: 1.1rem;
       color: #1a1a1a;
       font-weight: 600;
+      word-wrap: break-word;
     }
     
     .balance-value {
@@ -353,6 +405,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       cursor: pointer;
       transition: all 0.3s ease;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     
     .btn-reload:hover {
@@ -365,10 +418,12 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       display: flex;
       gap: 1rem;
       margin-top: 2rem;
+      flex-wrap: wrap;
     }
     
     .btn-archive {
       flex: 1;
+      min-width: 200px;
       padding: 0.8rem 2rem;
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       color: #ffffff;
@@ -402,9 +457,16 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       border-bottom: 2px solid #f1f5f9;
     }
     
+    .history-table-container {
+      overflow-x: auto;
+      margin: 0 -1rem;
+      padding: 0 1rem;
+    }
+    
     .history-table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 600px;
     }
     
     .history-table thead {
@@ -439,6 +501,8 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       font-size: 0.85rem;
       font-weight: 600;
       text-transform: uppercase;
+      display: inline-block;
+      white-space: nowrap;
     }
     
     .status-active {
@@ -469,6 +533,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      padding: 1rem;
     }
     
     .modal-overlay.active {
@@ -480,7 +545,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       border-radius: 16px;
       padding: 2rem;
       max-width: 500px;
-      width: 90%;
+      width: 100%;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
     
@@ -499,11 +564,13 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
     .modal-buttons {
       display: flex;
       gap: 1rem;
+      flex-wrap: wrap;
     }
     
     .btn-confirm,
     .btn-cancel {
       flex: 1;
+      min-width: 120px;
       padding: 0.8rem;
       border: none;
       border-radius: 8px;
@@ -531,31 +598,362 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       background: #d1d5db;
     }
     
-    @media (max-width: 768px) {
+    /* Tablet Styles (768px - 1024px) */
+    @media (max-width: 1024px) {
+      .admin-sidebar {
+        width: 200px;
+        padding: 1.5rem 1rem;
+      }
+      
+      .admin-sidebar h3 {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .admin-sidebar a {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.875rem;
+      }
+      
+      .admin-main {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+      }
+      
+      .admin-header {
+        padding: 1.25rem 2rem;
+      }
+      
+      .admin-content {
+        padding: 2rem;
+      }
+      
+      .user-details-container,
+      .history-section {
+        padding: 2rem;
+      }
+      
+      .user-header {
+        gap: 1.5rem;
+      }
+      
+      .user-qr-code {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .user-basic-info h2 {
+        font-size: 1.6rem;
+      }
+      
+      .user-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+    }
+    
+    /* Mobile Styles (up to 767px) */
+    @media (max-width: 767px) {
+      .mobile-menu-toggle {
+        display: block;
+      }
+      
+      .admin-sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+      }
+      
+      .admin-sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .overlay.active {
+        display: block;
+      }
+      
+      .admin-main {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .admin-header {
+        padding: 1rem 1.5rem 1rem 4.5rem;
+        gap: 0.75rem;
+      }
+      
+      .admin-header .back-btn,
+      .admin-header button {
+        font-size: 0.875rem;
+        padding: 0.55rem 1.25rem;
+      }
+      
+      .admin-content {
+        padding: 1.5rem 1rem;
+      }
+      
+      .user-details-container,
+      .history-section {
+        padding: 1.5rem;
+        border-radius: 12px;
+      }
+      
       .user-header {
         flex-direction: column;
         text-align: center;
+        gap: 1.5rem;
+      }
+      
+      .user-qr-code {
+        width: 130px;
+        height: 130px;
+      }
+      
+      .user-basic-info h2 {
+        font-size: 1.4rem;
+      }
+      
+      .user-basic-info p {
+        font-size: 0.95rem;
       }
       
       .user-details-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .detail-item {
+        padding: 1.25rem;
+      }
+      
+      .reload-section {
+        padding: 1.5rem;
+      }
+      
+      .reload-section h3 {
+        font-size: 1.1rem;
       }
       
       .reload-form {
         flex-direction: column;
+        gap: 1rem;
       }
       
       .form-group {
+        width: 100%;
+        min-width: unset;
+      }
+      
+      .btn-reload {
         width: 100%;
       }
       
       .action-buttons {
         flex-direction: column;
       }
+      
+      .btn-archive {
+        width: 100%;
+        min-width: unset;
+      }
+      
+      .history-section h3 {
+        font-size: 1.25rem;
+      }
+      
+      .history-table th,
+      .history-table td {
+        padding: 0.875rem 1rem;
+        font-size: 0.85rem;
+      }
+    }
+    
+    /* Small Mobile Styles (up to 480px) */
+    @media (max-width: 480px) {
+      .admin-sidebar {
+        width: 260px;
+        padding: 1.25rem 0.875rem;
+      }
+      
+      .admin-sidebar h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1.75rem;
+      }
+      
+      .admin-sidebar a {
+        font-size: 0.9rem;
+        padding: 0.7rem 0.75rem;
+      }
+      
+      .admin-header {
+        padding: 0.875rem 1rem 0.875rem 4rem;
+      }
+      
+      .admin-header .back-btn,
+      .admin-header button {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+      }
+      
+      .admin-content {
+        padding: 1.25rem 0.875rem;
+      }
+      
+      .user-details-container,
+      .history-section {
+        padding: 1.25rem;
+      }
+      
+      .user-qr-code {
+        width: 110px;
+        height: 110px;
+      }
+      
+      .user-basic-info h2 {
+        font-size: 1.25rem;
+      }
+      
+      .user-basic-info p {
+        font-size: 0.875rem;
+      }
+      
+      .detail-item {
+        padding: 1rem;
+      }
+      
+      .detail-item .value {
+        font-size: 1rem;
+      }
+      
+      .balance-value {
+        font-size: 1.3rem;
+      }
+      
+      .reload-section {
+        padding: 1.25rem;
+      }
+      
+      .reload-section h3 {
+        font-size: 1rem;
+      }
+      
+      .form-group input,
+      .btn-reload {
+        font-size: 0.95rem;
+      }
+      
+      .btn-archive {
+        font-size: 0.95rem;
+      }
+      
+      .history-section h3 {
+        font-size: 1.15rem;
+      }
+      
+      .history-table {
+        min-width: 550px;
+      }
+      
+      .history-table th,
+      .history-table td {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.8rem;
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
+      }
+      
+      .modal-content h3 {
+        font-size: 1.2rem;
+      }
+      
+      .modal-content p {
+        font-size: 0.95rem;
+      }
+      
+      .btn-confirm,
+      .btn-cancel {
+        font-size: 0.95rem;
+        padding: 0.7rem;
+      }
+    }
+    
+    /* Extra Small Mobile (up to 360px) */
+    @media (max-width: 360px) {
+      .admin-sidebar {
+        width: 240px;
+      }
+      
+      .mobile-menu-toggle {
+        top: 1rem;
+        left: 0.75rem;
+        padding: 0.5rem 0.7rem;
+        font-size: 1.3rem;
+      }
+      
+      .admin-header {
+        padding: 0.75rem 0.875rem 0.75rem 3.75rem;
+      }
+      
+      .admin-content {
+        padding: 1rem 0.75rem;
+      }
+      
+      .user-details-container,
+      .history-section {
+        padding: 1rem;
+      }
+      
+      .user-qr-code {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .user-basic-info h2 {
+        font-size: 1.15rem;
+      }
+      
+      .modal-buttons {
+        flex-direction: column;
+      }
+      
+      .btn-confirm,
+      .btn-cancel {
+        width: 100%;
+      }
+    }
+    
+    /* Landscape Mobile */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .admin-sidebar {
+        padding: 1rem 0.875rem;
+      }
+      
+      .admin-sidebar h3 {
+        margin-bottom: 1rem;
+        font-size: 1rem;
+      }
+      
+      .admin-sidebar a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+      }
+      
+      .user-header {
+        flex-direction: row;
+        text-align: left;
+      }
+      
+      .user-qr-code {
+        width: 100px;
+        height: 100px;
+      }
     }
   </style>
 </head>
 <body>
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+  <div class="overlay" onclick="toggleMobileMenu()"></div>
+  
   <div class="admin-dashboard">
     <aside class="admin-sidebar">
       <h3>SOUTHWOODS<br>MALL</h3>
@@ -593,7 +991,7 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
               <h2><?php echo htmlspecialchars($user['name']); ?></h2>
               <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
               <p><strong>User ID:</strong> #<?php echo htmlspecialchars($user['id']); ?></p>
-              <p><strong>Member Since:</strong> <?php echo date('F d, Y', strtotime($user['created_at'])); ?></p>
+              <p><strong>Member Since:</strong> <?php echo date('F d, Y', strtotime($user['created_at'])); ?></p
             </div>
           </div>
           
@@ -720,3 +1118,4 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
 </body>
 
 </html>
+
