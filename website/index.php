@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Southwoods Smart Parking System</title>
   <style>
     * {
@@ -48,12 +49,29 @@
       gap: 1rem;
       position: relative;
       z-index: 1;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .main-landing .logo {
       width: 140px;
       height: auto;
       margin-bottom: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .main-landing .logo:hover {
+      transform: scale(1.05);
     }
     
     .main-landing h1 {
@@ -134,28 +152,268 @@
       transform: translateY(0);
     }
     
+    /* Tablet Landscape */
+    @media (max-width: 1024px) {
+      body {
+        padding: 15px;
+      }
+      
+      .main-landing {
+        padding: 3rem 2.5rem;
+        max-width: 450px;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.65rem;
+      }
+    }
+    
+    /* Tablet Portrait */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      .main-landing {
+        padding: 2.75rem 2rem;
+        border-radius: 22px;
+        max-width: 420px;
+      }
+      
+      .main-landing .logo {
+        width: 130px;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.55rem;
+      }
+      
+      .main-landing p {
+        font-size: 0.98rem;
+        margin-bottom: 1.75rem;
+      }
+      
+      .main-landing .btn-group {
+        gap: 0.9rem;
+      }
+      
+      .main-landing .btn-group button {
+        padding: 0.95rem 1.75rem;
+        font-size: 0.98rem;
+      }
+    }
+    
+    /* Mobile Large */
     @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+      
       .main-landing {
         padding: 2.5rem 1.5rem;
         border-radius: 20px;
         max-width: 380px;
       }
       
-      .main-landing h1 { 
-        font-size: 1.5rem; 
+      .main-landing .logo {
+        width: 120px;
       }
       
-      .main-landing .logo { 
-        width: 120px; 
+      .main-landing h1 { 
+        font-size: 1.5rem;
+        letter-spacing: 0.3px;
       }
       
       .main-landing p {
         font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .main-landing .btn-group {
+        gap: 0.85rem;
       }
       
       .main-landing .btn-group button {
         padding: 0.875rem 1.5rem;
         font-size: 0.95rem;
+      }
+    }
+    
+    /* Mobile Medium */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+      
+      .main-landing {
+        padding: 2.25rem 1.25rem;
+        border-radius: 18px;
+        max-width: 340px;
+      }
+      
+      .main-landing .logo {
+        width: 110px;
+        margin-bottom: 0.4rem;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.35rem;
+        letter-spacing: 0.2px;
+        margin-bottom: 0.2rem;
+      }
+      
+      .main-landing p {
+        font-size: 0.9rem;
+        margin-bottom: 1.4rem;
+      }
+      
+      .main-landing .btn-group {
+        gap: 0.8rem;
+      }
+      
+      .main-landing .btn-group button {
+        padding: 0.85rem 1.25rem;
+        font-size: 0.92rem;
+        border-radius: 10px;
+      }
+    }
+    
+    /* Mobile Small */
+    @media (max-width: 360px) {
+      body {
+        padding: 8px;
+      }
+      
+      .main-landing {
+        padding: 2rem 1rem;
+        border-radius: 16px;
+        max-width: 310px;
+      }
+      
+      .main-landing .logo {
+        width: 100px;
+        margin-bottom: 0.3rem;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.25rem;
+        letter-spacing: 0.1px;
+      }
+      
+      .main-landing p {
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+      }
+      
+      .main-landing .btn-group {
+        gap: 0.75rem;
+      }
+      
+      .main-landing .btn-group button {
+        padding: 0.8rem 1rem;
+        font-size: 0.88rem;
+        border-radius: 10px;
+      }
+    }
+    
+    /* Very Small Devices */
+    @media (max-width: 320px) {
+      body {
+        padding: 6px;
+      }
+      
+      .main-landing {
+        padding: 1.75rem 0.85rem;
+        border-radius: 14px;
+        max-width: 290px;
+        gap: 0.85rem;
+      }
+      
+      .main-landing .logo {
+        width: 90px;
+        margin-bottom: 0.25rem;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.15rem;
+        letter-spacing: 0;
+      }
+      
+      .main-landing p {
+        font-size: 0.8rem;
+        margin-bottom: 1.1rem;
+      }
+      
+      .main-landing .btn-group {
+        gap: 0.7rem;
+      }
+      
+      .main-landing .btn-group button {
+        padding: 0.75rem 0.85rem;
+        font-size: 0.85rem;
+        border-radius: 9px;
+      }
+    }
+    
+    /* Landscape orientation for mobile */
+    @media (max-height: 600px) and (orientation: landscape) {
+      body {
+        padding: 10px;
+      }
+      
+      .main-landing {
+        padding: 1.75rem 2rem;
+        max-width: 500px;
+        gap: 0.6rem;
+      }
+      
+      .main-landing .logo {
+        width: 90px;
+        margin-bottom: 0.25rem;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.3rem;
+        margin-bottom: 0.15rem;
+      }
+      
+      .main-landing p {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      
+      .main-landing .btn-group {
+        gap: 0.65rem;
+      }
+      
+      .main-landing .btn-group button {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Extra large screens */
+    @media (min-width: 1440px) {
+      .main-landing {
+        max-width: 520px;
+        padding: 4rem 3.5rem;
+      }
+      
+      .main-landing .logo {
+        width: 160px;
+      }
+      
+      .main-landing h1 {
+        font-size: 1.9rem;
+      }
+      
+      .main-landing p {
+        font-size: 1.1rem;
+      }
+      
+      .main-landing .btn-group button {
+        padding: 1.1rem 2.25rem;
+        font-size: 1.05rem;
       }
     }
   </style>
