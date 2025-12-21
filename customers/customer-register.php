@@ -1,66 +1,3 @@
-<?php
-// Include database connection
-require_once __DIR__ . '/../DB/DB_connection.php';
-
-$success = '';
-$error = '';
-
-$name = '';
-$email = '';
-$plate = '';
-$vehicle = '';
-$password = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $plate = trim($_POST['plate'] ?? '');
-    $vehicle = trim($_POST['vehicle'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if (!$name || !$email || !$plate || !$vehicle || !$password) {
-        $error = "All fields are required!";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email format!";
-        $email = "";
-    } else {
-
-        // CHECK EMAIL
-        $sql = "SELECT id FROM customers WHERE email = ?";
-        $result = db_prepare($sql, [$email]);
-
-        if ($result && db_num_rows($result) > 0) {
-            $error = "Email is already registered!";
-            $email = "";
-        } else {
-
-            // CHECK PLATE
-            $sql = "SELECT id FROM customers WHERE plate = ?";
-            $result = db_prepare($sql, [$plate]);
-
-            if ($result && db_num_rows($result) > 0) {
-                $error = "Plate number is already registered!";
-                $plate = "";
-            } else {
-
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-                $sql = "INSERT INTO customers (name, email, plate, vehicle, password, balance) 
-                        VALUES (?, ?, ?, ?, ?, 0.00)";
-                $result = db_prepare($sql, [$name, $email, $plate, $vehicle, $hashedPassword]);
-
-                if ($result) {
-                    $success = "Registration successful! You can now log in.";
-                    $name = $email = $plate = $vehicle = $password = "";
-                } else {
-                    $error = "Registration failed. Please try again.";
-                }
-            }
-        }
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,6 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       transform: translateY(0);
     }
 
+    .register-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .back-link {
       width: 100%;
       padding: 0.85rem;
@@ -252,50 +194,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="register-container">
     <h2>Customer Registration</h2>
 
-    <?php if ($success): ?>
-      <div class="msg-success"><?= htmlspecialchars($success) ?></div>
-    <?php elseif ($error): ?>
-      <div class="msg-error"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
+    <div id="message-container"></div>
 
-    <form class="register-form" method="POST">
+    <form class="register-form" id="registerForm">
 
       <label for="name">Full Name*</label>
-      <input type="text" id="name" name="name"
-             placeholder="Enter your full name"
-             value="<?= htmlspecialchars($name) ?>" required>
+      <input type="text" id="name" name="name" placeholder="Enter your full name" required>
 
       <label for="email">Email Address*</label>
-      <input type="email" id="email" name="email"
-             placeholder="Enter your email"
-             value="<?= htmlspecialchars($email) ?>"
-             class="<?= ($error === "Email is already registered!" || $error === "Invalid email format!") ? 'input-error' : '' ?>" required>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
       <label for="plate">Plate Number*</label>
-      <input type="text" id="plate" name="plate"
-             placeholder="e.g., ABC-1234"
-             value="<?= htmlspecialchars($plate) ?>"
-             class="<?= ($error === "Plate number is already registered!") ? 'input-error' : '' ?>" required>
+      <input type="text" id="plate" name="plate" placeholder="e.g., ABC-1234" required>
 
       <label for="vehicle">Vehicle Type*</label>
       <select id="vehicle" name="vehicle" required>
         <option value="">Select vehicle type</option>
-        <option value="Sedan" <?= $vehicle === "Sedan" ? "selected" : "" ?>>Sedan</option>
-        <option value="SUV" <?= $vehicle === "SUV" ? "selected" : "" ?>>SUV</option>
-        <option value="Van" <?= $vehicle === "Van" ? "selected" : "" ?>>Van</option>
+        <option value="Sedan">Sedan</option>
+        <option value="SUV">SUV</option>
+        <option value="Van">Van</option>
+        <option value="Motorcycle">Motorcycle</option>
+        <option value="Truck">Truck</option>
       </select>
 
       <label for="password">Password*</label>
-      <input type="password" id="password" name="password"
-             placeholder="Create a password" required>
+      <input type="password" id="password" name="password" placeholder="Create a password" required>
 
-      <button type="submit" class="register-btn">Register</button>
+      <button type="submit" class="register-btn" id="submitBtn">Register</button>
     </form>
 
-    <a href="../website/index.php" class="back-link">← Back to Main</a>
+    <a href="/index.php" class="back-link">← Back to Main</a>
 
   </div>
 
-</body>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const messageContainer = document.getElementById('message-container');
+      
+      // Disable button
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registering...';
+      
+      // Clear previous messages
+      messageContainer.innerHTML = '';
+      
+      // Get form data
+      const formData = new FormData(this);
+      
+      try {
+        const response = await fetch('customer-register-ajax.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          messageContainer.innerHTML = `<div class="msg-success">${result.success}</div>`;
+          this.reset();
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'customer-login.php';
+          }, 2000);
+        } else if (result.error) {
+          messageContainer.innerHTML = `<div class="msg-error">${result.error}</div>`;
+          
+          // Handle field errors
+          if (result.fieldErrors) {
+            for (const [field, error] of Object.entries(result.fieldErrors)) {
+              const input = document.getElementById(field);
+              if (input) {
+                input.classList.add('input-error');
+              }
+            }
+          }
+        }
+      } catch (error) {
+        messageContainer.innerHTML = `<div class="msg-error">An error occurred. Please try again.</div>`;
+        console.error('Error:', error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register';
+      }
+    });
+    
+    // Remove error styling on input
+    document.querySelectorAll('input, select').forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.remove('input-error');
+      });
+    });
+  </script>
 
+</body>
 </html>
