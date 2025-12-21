@@ -2,7 +2,7 @@
 session_start();
 
 // Include PostgreSQL database connection
-require_once 'DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 $error = '';
 
@@ -337,4 +337,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 </body>
+
 </html>
