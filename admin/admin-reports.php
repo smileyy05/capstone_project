@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Include PostgreSQL database connection
-require_once '../DB/DB_connection.php';
+require_once __DIR__ . '/../DB/DB_connection.php';
 
 // Get customer registrations per day (last 7 days)
 $sql = "SELECT DATE(created_at) as date, COUNT(*) as count 
@@ -392,4 +392,5 @@ if ($result && db_num_rows($result) > 0) {
     }
   </script>
 </body>
+
 </html>
