@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       left: 0;
       right: 0;
       bottom: 0;
-      background: url('../img/southwoods_bg.jpg') no-repeat center center;
+      background: url('/../img/southwoods_bg.jpg') no-repeat center center;
       background-size: cover;
       transition: transform 0.3s ease;
     }
@@ -638,3 +638,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </body>
 </html>
+
