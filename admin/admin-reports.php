@@ -48,6 +48,7 @@ if ($result && db_num_rows($result) > 0) {
       background: #f3f4f6;
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      overflow-x: hidden;
     }
     
     .admin-dashboard {
@@ -55,6 +56,7 @@ if ($result && db_num_rows($result) > 0) {
       min-height: 100vh;
     }
     
+    /* Sidebar Styles */
     .admin-sidebar {
       background: linear-gradient(180deg, #1e5bb8 0%, #1651c6 100%);
       color: #fff;
@@ -64,6 +66,13 @@ if ($result && db_num_rows($result) > 0) {
       flex-direction: column;
       align-items: flex-start;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
     }
     
     .admin-sidebar h3 {
@@ -107,10 +116,45 @@ if ($result && db_num_rows($result) > 0) {
       background: rgba(255, 255, 255, 0.15);
     }
     
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1.25rem;
+      left: 1rem;
+      z-index: 101;
+      background: #1e5bb8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .mobile-menu-toggle:active {
+      transform: scale(0.95);
+    }
+    
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+    
+    /* Main Content */
     .admin-main {
       flex: 1;
       background: #f3f4f6;
       min-height: 100vh;
+      margin-left: 240px;
+      width: calc(100% - 240px);
     }
     
     .admin-header {
@@ -162,6 +206,8 @@ if ($result && db_num_rows($result) > 0) {
       align-items: center;
       justify-content: space-between;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     
     .reports-title {
@@ -192,6 +238,7 @@ if ($result && db_num_rows($result) > 0) {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      white-space: nowrap;
     }
     
     .download-btn:hover {
@@ -211,62 +258,231 @@ if ($result && db_num_rows($result) > 0) {
       margin-top: 2rem;
     }
     
+    /* Tablet Styles (768px - 1024px) */
     @media (max-width: 1024px) {
+      .admin-sidebar {
+        width: 200px;
+        padding: 1.5rem 1rem;
+      }
+      
+      .admin-sidebar h3 {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .admin-sidebar a {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.875rem;
+        gap: 0.6rem;
+      }
+      
+      .admin-main {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+      }
+      
+      .admin-header {
+        padding: 1.25rem 2rem;
+      }
+      
+      .admin-content {
+        padding: 2rem;
+      }
+      
+      .reports-container {
+        padding: 2rem;
+      }
+      
+      .reports-title {
+        font-size: 1.35rem;
+      }
+      
       .chart-container {
         height: 350px;
       }
     }
     
-    @media (max-width: 768px) {
-      .admin-sidebar {
-        width: 80px;
-        padding: 1.5rem 0.5rem;
+    /* Mobile Styles (up to 767px) */
+    @media (max-width: 767px) {
+      .mobile-menu-toggle {
+        display: block;
       }
       
-      .admin-sidebar h3 {
-        font-size: 0.75rem;
-        margin-bottom: 1.5rem;
-        text-align: center;
+      .admin-sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+      }
+      
+      .admin-sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .overlay.active {
+        display: block;
+      }
+      
+      .admin-main {
+        margin-left: 0;
         width: 100%;
       }
       
-      .admin-sidebar nav a {
-        font-size: 0.85rem;
-        padding: 0.7rem 0.5rem;
-        justify-content: center;
-        gap: 0.5rem;
+      .admin-header {
+        padding: 1rem 1.5rem 1rem 4.5rem;
+        justify-content: flex-end;
       }
       
-      .admin-header {
-        padding: 1.2rem 1.5rem;
+      .admin-header button {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.875rem;
       }
       
       .admin-content {
-        padding: 1.5rem;
+        padding: 1.5rem 1rem;
       }
       
       .reports-container {
         padding: 1.5rem;
+        border-radius: 12px;
       }
       
       .reports-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: stretch;
+      }
+      
+      .reports-title {
+        font-size: 1.25rem;
+      }
+      
+      .reports-title::before {
+        font-size: 1.5rem;
       }
       
       .download-btn {
         width: 100%;
         justify-content: center;
+        padding: 0.875rem 1.5rem;
       }
       
       .chart-container {
         height: 300px;
+        margin-top: 1.5rem;
+      }
+    }
+    
+    /* Small Mobile Styles (up to 480px) */
+    @media (max-width: 480px) {
+      .admin-sidebar {
+        width: 260px;
+        padding: 1.25rem 0.875rem;
+      }
+      
+      .admin-sidebar h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1.75rem;
+      }
+      
+      .admin-sidebar a {
+        font-size: 0.9rem;
+        padding: 0.7rem 0.75rem;
+      }
+      
+      .admin-header {
+        padding: 0.875rem 1rem 0.875rem 4rem;
+      }
+      
+      .admin-header button {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+      }
+      
+      .admin-content {
+        padding: 1.25rem 0.875rem;
+      }
+      
+      .reports-container {
+        padding: 1.25rem;
+      }
+      
+      .reports-title {
+        font-size: 1.1rem;
+        gap: 0.5rem;
+      }
+      
+      .reports-title::before {
+        font-size: 1.3rem;
+      }
+      
+      .download-btn {
+        font-size: 0.875rem;
+        padding: 0.75rem 1.25rem;
+      }
+      
+      .download-btn::before {
+        font-size: 1rem;
+      }
+      
+      .chart-container {
+        height: 280px;
+      }
+    }
+    
+    /* Extra Small Mobile (up to 360px) */
+    @media (max-width: 360px) {
+      .admin-sidebar {
+        width: 240px;
+      }
+      
+      .mobile-menu-toggle {
+        top: 1rem;
+        left: 0.75rem;
+        padding: 0.5rem 0.7rem;
+        font-size: 1.3rem;
+      }
+      
+      .admin-header {
+        padding: 0.75rem 0.875rem 0.75rem 3.75rem;
+      }
+      
+      .reports-container {
+        padding: 1rem;
+      }
+      
+      .reports-title {
+        font-size: 1rem;
+      }
+      
+      .chart-container {
+        height: 260px;
+      }
+    }
+    
+    /* Landscape Mobile */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .admin-sidebar {
+        padding: 1rem 0.875rem;
+      }
+      
+      .admin-sidebar h3 {
+        margin-bottom: 1rem;
+        font-size: 1rem;
+      }
+      
+      .admin-sidebar a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+      }
+      
+      .chart-container {
+        height: 240px;
       }
     }
   </style>
 </head>
 <body>
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+  <div class="overlay" onclick="toggleMobileMenu()"></div>
+  
   <div class="admin-dashboard">
     <aside class="admin-sidebar">
       <h3>SOUTHWOODS<br>MALL</h3>
@@ -303,11 +519,28 @@ if ($result && db_num_rows($result) > 0) {
   </div>
   
   <script>
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+      const sidebar = document.querySelector('.admin-sidebar');
+      const overlay = document.querySelector('.overlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+    
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.admin-sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 767) {
+          toggleMobileMenu();
+        }
+      });
+    });
+    
     // Chart data from PHP
     const dates = <?php echo json_encode($dates); ?>;
     const counts = <?php echo json_encode($counts); ?>;
     
-    // Create chart
+    // Create chart with responsive options
     const ctx = document.getElementById('customerChart').getContext('2d');
     const customerChart = new Chart(ctx, {
       type: 'line',
@@ -338,22 +571,22 @@ if ($result && db_num_rows($result) > 0) {
             align: 'end',
             labels: {
               usePointStyle: true,
-              padding: 15,
+              padding: window.innerWidth <= 480 ? 10 : 15,
               font: {
-                size: 12,
+                size: window.innerWidth <= 480 ? 11 : 12,
                 weight: '500'
               }
             }
           },
           tooltip: {
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            padding: 12,
+            padding: window.innerWidth <= 480 ? 10 : 12,
             titleFont: {
-              size: 14,
+              size: window.innerWidth <= 480 ? 12 : 14,
               weight: 'bold'
             },
             bodyFont: {
-              size: 13
+              size: window.innerWidth <= 480 ? 11 : 13
             },
             displayColors: false
           }
@@ -364,7 +597,7 @@ if ($result && db_num_rows($result) > 0) {
             ticks: {
               stepSize: 1,
               font: {
-                size: 12
+                size: window.innerWidth <= 480 ? 10 : 12
               }
             },
             grid: {
@@ -377,12 +610,28 @@ if ($result && db_num_rows($result) > 0) {
             },
             ticks: {
               font: {
-                size: 12
-              }
+                size: window.innerWidth <= 480 ? 10 : 12
+              },
+              maxRotation: window.innerWidth <= 480 ? 45 : 0,
+              minRotation: window.innerWidth <= 480 ? 45 : 0
             }
           }
         }
       }
+    });
+    
+    // Update chart on window resize
+    window.addEventListener('resize', () => {
+      customerChart.options.plugins.legend.labels.padding = window.innerWidth <= 480 ? 10 : 15;
+      customerChart.options.plugins.legend.labels.font.size = window.innerWidth <= 480 ? 11 : 12;
+      customerChart.options.plugins.tooltip.padding = window.innerWidth <= 480 ? 10 : 12;
+      customerChart.options.plugins.tooltip.titleFont.size = window.innerWidth <= 480 ? 12 : 14;
+      customerChart.options.plugins.tooltip.bodyFont.size = window.innerWidth <= 480 ? 11 : 13;
+      customerChart.options.scales.y.ticks.font.size = window.innerWidth <= 480 ? 10 : 12;
+      customerChart.options.scales.x.ticks.font.size = window.innerWidth <= 480 ? 10 : 12;
+      customerChart.options.scales.x.ticks.maxRotation = window.innerWidth <= 480 ? 45 : 0;
+      customerChart.options.scales.x.ticks.minRotation = window.innerWidth <= 480 ? 45 : 0;
+      customerChart.update();
     });
     
     // Download report as CSV
@@ -392,5 +641,4 @@ if ($result && db_num_rows($result) > 0) {
     }
   </script>
 </body>
-
 </html>
