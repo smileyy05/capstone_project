@@ -81,6 +81,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       min-height: 100vh;
     }
     
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1001;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
     .admin-sidebar {
       background: #2563eb;
       color: #fff;
@@ -89,6 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      transition: transform 0.3s ease;
+      position: relative;
+      z-index: 100;
     }
     
     .admin-sidebar h3 {
@@ -135,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       flex: 1;
       background: #f5f5f5;
       min-height: 100vh;
+      width: 100%;
     }
     
     .admin-header {
@@ -145,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       justify-content: space-between;
       padding: 1.2rem 2rem;
       gap: 1rem;
+      flex-wrap: wrap;
     }
     
     .admin-header h1 {
@@ -159,6 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       display: flex;
       align-items: center;
       gap: 1rem;
+      flex-wrap: wrap;
     }
     
     .admin-header input[type="text"] {
@@ -187,6 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       transition: all 0.2s ease;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     
     .admin-header button:hover {
@@ -205,6 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       padding: 2rem;
       max-width: 600px;
       margin: 0 auto;
+      width: 100%;
     }
     
     .settings-card h2 {
@@ -346,37 +371,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       background: #1d4ed8;
     }
     
-    @media (max-width: 768px) {
+    /* Tablet responsive */
+    @media (max-width: 1024px) {
       .admin-sidebar {
-        width: 70px;
-        padding: 1.5rem 0.5rem;
+        width: 200px;
       }
       
       .admin-sidebar h3 {
-        font-size: 0.7rem;
-        text-align: center;
-        width: 100%;
+        font-size: 1.1rem;
       }
       
-      .admin-sidebar nav a {
-        font-size: 0.8rem;
-        padding: 0.6rem;
-        justify-content: center;
+      .admin-sidebar a {
+        font-size: 0.9rem;
+        padding: 0.65rem 0.85rem;
+      }
+      
+      .admin-header {
+        padding: 1rem 1.5rem;
+      }
+      
+      .admin-content {
+        padding: 1.5rem;
+      }
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .admin-sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .admin-sidebar h3 {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
       }
       
       .admin-header {
         flex-direction: column;
+        align-items: stretch;
         padding: 1rem;
+        padding-top: 4rem;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
       }
       
       .header-right {
         width: 100%;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: 0.75rem;
       }
       
       .admin-header input[type="text"] {
         width: 100%;
-        margin-bottom: 0.5rem;
+      }
+      
+      .admin-header button {
+        width: 100%;
+        padding: 0.65rem;
       }
       
       .admin-content {
@@ -386,12 +454,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       .settings-card {
         padding: 1.5rem;
       }
+      
+      .settings-card h2 {
+        font-size: 1.2rem;
+      }
+      
+      .modal-content {
+        min-width: auto;
+        width: 90%;
+        padding: 1.5rem;
+      }
+      
+      .modal-content h3 {
+        font-size: 1.2rem;
+      }
+    }
+    
+    /* Small mobile devices */
+    @media (max-width: 480px) {
+      .admin-sidebar {
+        width: 200px;
+      }
+      
+      .admin-header h1 {
+        font-size: 1rem;
+      }
+      
+      .settings-card {
+        padding: 1rem;
+      }
+      
+      .settings-card h2 {
+        font-size: 1.1rem;
+      }
+      
+      .form-group label {
+        font-size: 0.9rem;
+      }
+      
+      .form-group input[type="password"] {
+        font-size: 0.95rem;
+        padding: 0.65rem;
+      }
+      
+      .btn-update {
+        font-size: 0.95rem;
+        padding: 0.75rem;
+      }
+      
+      .modal-content {
+        padding: 1.25rem;
+      }
+      
+      .modal-content h3 {
+        font-size: 1.1rem;
+      }
+      
+      .modal-content p {
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Landscape mobile orientation */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .admin-sidebar {
+        padding: 1rem 0.75rem;
+      }
+      
+      .admin-sidebar h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+      }
+      
+      .admin-sidebar a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+      }
+    }
+    
+    /* Overlay for mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    
+    .sidebar-overlay.active {
+      display: block;
     }
   </style>
 </head>
 <body>
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  
   <div class="admin-dashboard">
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="sidebar">
       <h3>SOUTHWOODS<br>MALL</h3>
       <nav>
         <a href="admin-dashboard.php">🏠 Home</a>
@@ -462,6 +625,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php endif; ?>
   
   <script>
+    // Toggle sidebar for mobile
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+    
+    // Close sidebar when clicking on a link (mobile)
+    document.querySelectorAll('.admin-sidebar a').forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+          toggleSidebar();
+        }
+      });
+    });
+    
     // Close modal
     function closeModal() {
       document.getElementById('successModal')?.classList.remove('active');
@@ -473,7 +653,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         window.location.href = 'admin-account-settings.php';
       }
     });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
   </script>
 </body>
-
 </html>
