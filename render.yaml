@@ -1,0 +1,43 @@
+services:
+  # Web Service (PHP Application)
+  - type: web
+    name: southwoods-parking
+    env: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: southwoods-parking-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: southwoods-parking-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: southwoods-parking-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: southwoods-parking-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: southwoods-parking-db
+          property: password
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health-check.php
+
+databases:
+  # PostgreSQL Database
+  - name: southwoods-parking-db
+    databaseName: parking_system_3q8a
+    user: smartparking
+    region: oregon
+    plan: free
+    ipAllowList: []

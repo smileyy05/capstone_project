@@ -1,0 +1,136 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+header('Content-Type: application/json');
+
+// Include database connection
+require_once '../DB/DB_connection.php';
+
+$data = json_decode(file_get_contents("php://input"), true);
+$qr_code = $data['qr_code'] ?? null;
+
+if (!$qr_code) {
+    echo json_encode(["success" => false, "message" => "QR code required"]);
+    exit;
+}
+
+// Look up customer by QR code
+$sql = "SELECT id, name, email, plate, vehicle, balance, qr_code FROM customers WHERE qr_code = ? AND archived = 0";
+$result = db_prepare($sql, [$qr_code]);
+
+if (!$result) {
+    echo json_encode(["success" => false, "message" => "Database error: " . db_error()]);
+    exit;
+}
+
+$customer = db_fetch_assoc($result);
+
+if (!$customer) {
+    echo json_encode(["success" => false, "message" => "Invalid QR code or account archived"]);
+    exit;
+}
+
+$customer_id = $customer['id'];
+
+// Check if customer balance is sufficient (minimum ₱30)
+if ($customer['balance'] < 30) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Insufficient balance. Please reload your account."
+    ]);
+    exit;
+}
+
+// Prevent duplicate active entry
+$check_sql = "SELECT id, entry_time FROM parking_logs 
+              WHERE customer_id = ? AND exit_time IS NULL
+              ORDER BY entry_time DESC 
+              LIMIT 1";
+$check_result = db_prepare($check_sql, [$customer_id]);
+
+if ($check_result && db_num_rows($check_result) > 0) {
+    $active_entry = db_fetch_assoc($check_result);
+    echo json_encode([
+        "success" => false,
+        "message" => "You have already entered the parking lot at " . date('g:i A', strtotime($active_entry['entry_time'])) . ". Please exit first."
+    ]);
+    exit;
+}
+
+// Check available parking spaces
+$slots_sql = "SELECT available_spaces FROM parking_slots WHERE id = 1";
+$slots_result = db_query($slots_sql);
+
+if ($slots_result) {
+    $slots = db_fetch_assoc($slots_result);
+    if ($slots && $slots['available_spaces'] <= 0) {
+        echo json_encode([
+            "success" => false,
+            "message" => "No available parking spaces"
+        ]);
+        exit;
+    }
+}
+
+// Start transaction
+if (!db_begin_transaction()) {
+    echo json_encode(["success" => false, "message" => "Failed to start transaction"]);
+    exit;
+}
+
+try {
+    // Insert parking log and get ID
+    $insert_sql = "INSERT INTO parking_logs
+                   (customer_id, customer_name, plate, vehicle, entry_time, fee)
+                   VALUES (?, ?, ?, ?, NOW(), 0.00)";
+    
+    $log_id = db_insert_id($insert_sql, [
+        $customer_id,
+        $customer['name'],
+        $customer['plate'],
+        $customer['vehicle']
+    ]);
+    
+    if (!$log_id) {
+        throw new Exception("Failed to insert parking log: " . db_error());
+    }
+    
+    // Update parking slots - decrease available, increase occupied
+    $update_slots_sql = "UPDATE parking_slots 
+                         SET available_spaces = available_spaces - 1,
+                             occupied_spaces = occupied_spaces + 1
+                         WHERE id = 1";
+    
+    if (!db_query($update_slots_sql)) {
+        throw new Exception("Failed to update parking slots: " . db_error());
+    }
+    
+    // Commit transaction
+    if (!db_commit()) {
+        throw new Exception("Failed to commit transaction");
+    }
+    
+    echo json_encode([
+        "success" => true,
+        "message" => "Entry recorded successfully",
+        "log_id" => $log_id,
+        "customer" => [
+            "id" => $customer['id'],
+            "name" => $customer['name'],
+            "email" => $customer['email'],
+            "balance" => $customer['balance'],
+            "qr_code" => $customer['qr_code'],
+            "plate" => $customer['plate'],
+            "vehicle" => $customer['vehicle']
+        ]
+    ]);
+    
+} catch (Exception $e) {
+    db_rollback();
+    echo json_encode([
+        "success" => false,
+        "message" => "Entry failed: " . $e->getMessage()
+    ]);
+}
+?>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Southwoods Mall - Parking Entry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Landing Page */
+        .landing-page {
+            background: linear-gradient(135deg, rgba(46, 87, 185, 0.85), rgba(30, 60, 140, 0.85)),
+                        url('southwoods_bg.jpg') center/cover no-repeat fixed;
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-size: cover;
+            background-position: center center;
+        }
+
+        .header {
+            background: transparent;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            max-width: 300px;
+            height: auto;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .landing-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .scan-title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: white;
+            font-weight: bold;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .scanner-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .scanner-icon {
+            width: 200px;
+            height: 200px;
+            animation: pulse 2s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scanner-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .scanner-status {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .scanner-status.scanning {
+            color: #4CAF50;
+            animation: blink 0.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            max-width: 500px;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        /* Success Page */
+        .success-page {
+            background: white;
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 20px 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .success-page .header {
+            position: absolute;
+            top: 0;
+            background: white;
+            padding: 20px;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 15px;
+            padding: 60px 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .checkmark {
+            font-size: 5rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .welcome-title {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .countdown {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2e57b9;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                max-width: 220px;
+            }
+
+            .scan-title {
+                font-size: 2.5rem;
+            }
+
+            .scanner-icon {
+                width: 150px;
+                height: 150px;
+            }
+
+            .success-card {
+                padding: 40px 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Processing...</div>
+    </div>
+
+    <!-- Landing/Scan Page -->
+    <div class="page active" id="landing-page">
+        <div class="landing-page">
+            <div class="header">
+                <img src="Without-Background.png" alt="Southwoods Mall" class="logo">
+            </div>
+            <div class="landing-content">
+                <h1 class="scan-title">SCAN HERE</h1>
+                <div class="scanner-indicator">
+                    <div class="scanner-icon">
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Outer frame -->
+                            <rect x="10" y="10" width="180" height="180" fill="none" stroke="white" stroke-width="4" rx="8"/>
+                            
+                            <!-- Corner brackets - Top Left -->
+                            <path d="M 30 30 L 30 60 M 30 30 L 60 30" stroke="white" stroke-width="8" stroke-linecap="round"/>
+                            
+                            <!-- Corner brackets - Top Right -->
+                            <path d="M 170 30 L 170 60 M 170 30 L 140 30" stroke="white" stroke-width="8" stroke-linecap="round"/>
+                            
+                            <!-- Corner brackets - Bottom Left -->
+                            <path d="M 30 170 L 30 140 M 30 170 L 60 170" stroke="white" stroke-width="8" stroke-linecap="round"/>
+                            
+                            <!-- Corner brackets - Bottom Right -->
+                            <path d="M 170 170 L 170 140 M 170 170 L 140 170" stroke="white" stroke-width="8" stroke-linecap="round"/>
+                            
+                            <!-- QR CODE text -->
+                            <text x="100" y="105" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="Arial, sans-serif">QR CODE</text>
+                        </svg>
+                    </div>
+                    <div class="scanner-status">Ready to scan...</div>
+                </div>
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Page -->
+    <div class="page" id="success-page">
+        <div class="success-page">
+            <div class="header">
+                <img src="Without-Background.png" alt="Southwoods Mall" class="logo" style="max-width: 200px;">
+            </div>
+            <div class="success-card">
+                <div class="checkmark">✓</div>
+                <h2 class="welcome-title" id="welcomeMessage">Welcome, USER!</h2>
+                
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-label">Your Balance</div>
+                        <div class="info-value" id="userBalance">₱500.00</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Available Slots</div>
+                        <div class="info-value" id="availableSlots">50</div>
+                    </div>
+                </div>
+
+                <div class="countdown" id="countdown">Returning to scan page in 5 seconds...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let countdownInterval = null;
+        let scanBuffer = '';
+        let scanTimeout = null;
+        let isScanning = false;
+        let scanCooldown = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Hardware scanner ready');
+            resetBalances();
+            initializeHardwareScanner();
+        });
+
+        function initializeHardwareScanner() {
+            // Listen for keyboard input from hardware scanner
+            document.addEventListener('keypress', handleScannerInput);
+            
+            // Also listen for paste events (some scanners use clipboard)
+            document.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text');
+                if (pastedData && !isScanning) {
+                    processScan(pastedData.trim());
+                }
+            });
+
+            console.log('✅ Hardware scanner initialized');
+        }
+
+        function handleScannerInput(event) {
+            // Ignore input when on success page
+            if (!document.getElementById('landing-page').classList.contains('active')) {
+                return;
+            }
+
+            // Prevent scanning if in cooldown
+            if (isScanning) {
+                return;
+            }
+
+            // Clear previous timeout
+            if (scanTimeout) {
+                clearTimeout(scanTimeout);
+            }
+
+            // Hardware scanners typically send data very quickly
+            // If the key is Enter, process the accumulated buffer
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault();
+                if (scanBuffer.length > 0 && !isScanning) {
+                    updateScannerStatus('Scanning...', true);
+                    processScan(scanBuffer.trim());
+                    scanBuffer = '';
+                }
+                return;
+            }
+
+            // Accumulate the scan data
+            scanBuffer += event.key;
+
+            // Auto-process after 100ms of no input (scanner finished)
+            scanTimeout = setTimeout(() => {
+                if (scanBuffer.length > 5 && !isScanning) { // Minimum QR code length
+                    updateScannerStatus('Scanning...', true);
+                    processScan(scanBuffer.trim());
+                    scanBuffer = '';
+                }
+            }, 100);
+        }
+
+        function updateScannerStatus(message, isScanning = false) {
+            const statusElement = document.querySelector('.scanner-status');
+            if (statusElement) {
+                statusElement.textContent = message;
+                if (isScanning) {
+                    statusElement.classList.add('scanning');
+                } else {
+                    statusElement.classList.remove('scanning');
+                }
+            }
+        }
+
+        function processScan(qrData) {
+            if (!qrData || qrData.length === 0) {
+                updateScannerStatus('Ready to scan...');
+                showError('Invalid scan data');
+                return;
+            }
+
+            // Prevent double scanning
+            if (isScanning) {
+                console.log('Scan blocked - cooldown active');
+                return;
+            }
+
+            isScanning = true;
+            console.log('Processing scan:', qrData);
+            verifyAndEnter(qrData);
+
+            // Set 5-second cooldown
+            if (scanCooldown) {
+                clearInterval(scanCooldown);
+            }
+
+            let cooldownSeconds = 5;
+            updateScannerStatus(`Please wait ${cooldownSeconds}s...`, true);
+
+            scanCooldown = setInterval(() => {
+                cooldownSeconds--;
+                if (cooldownSeconds > 0) {
+                    updateScannerStatus(`Please wait ${cooldownSeconds}s...`, true);
+                } else {
+                    clearInterval(scanCooldown);
+                    isScanning = false;
+                    updateScannerStatus('Ready to scan...');
+                    scanBuffer = ''; // Clear any accumulated buffer
+                }
+            }, 1000);
+        }
+
+        function resetBalances() {
+            fetch('reset_balances.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ All customer balances reset to ₱500.00 for testing');
+                }
+            })
+            .catch(error => console.error('Error resetting balances:', error));
+        }
+
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageName + '-page').classList.add('active');
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+            setTimeout(() => {
+                errorDiv.classList.remove('active');
+            }, 5000);
+        }
+
+        function verifyAndEnter(qrData) {
+            // Verify QR Code
+            fetch('verify_qr.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ qr_code: qrData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    showLoading(false);
+                    updateScannerStatus('Ready to scan...');
+                    isScanning = false;
+                    if (scanCooldown) clearInterval(scanCooldown);
+                    showError(data.message || 'Verification failed');
+                    return;
+                }
+
+                currentUser = data.customer;
+
+                // Record Entry
+                return fetch('record_entry.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        customer_id: currentUser.id,
+                        qr_code: currentUser.qr_code 
+                    })
+                });
+            })
+            .then(response => response ? response.json() : null)
+            .then(data => {
+                if (data && data.success) {
+                    // Get updated available slots from server
+                    fetch('get_available_slots.php')
+                    .then(response => response.json())
+                    .then(slotsData => {
+                        showLoading(false);
+                        showSuccessPage(
+                            currentUser.name,
+                            currentUser.balance,
+                            slotsData.success ? slotsData.available_spaces : 5
+                        );
+                    })
+                    .catch(error => {
+                        showLoading(false);
+                        // Still show success even if slot fetch fails
+                        showSuccessPage(currentUser.name, currentUser.balance, 5);
+                    });
+                } else if (data) {
+                    showLoading(false);
+                    updateScannerStatus('Ready to scan...');
+                    isScanning = false;
+                    if (scanCooldown) clearInterval(scanCooldown);
+                    showError(data.message || 'Failed to record entry');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                updateScannerStatus('Ready to scan...');
+                isScanning = false;
+                if (scanCooldown) clearInterval(scanCooldown);
+                showError('Connection error. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+
+        function showSuccessPage(name, balance, availableSlots) {
+            // Update success page content
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${name.toUpperCase()}!`;
+            document.getElementById('userBalance').textContent = `₱${parseFloat(balance).toFixed(2)}`;
+            document.getElementById('availableSlots').textContent = availableSlots;
+
+            // Show success page
+            showPage('success');
+
+            // Start countdown
+            let seconds = 5;
+            document.getElementById('countdown').textContent = `Returning to scan page in ${seconds} seconds...`;
+
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                seconds--;
+                if (seconds > 0) {
+                    document.getElementById('countdown').textContent = `Returning to scan page in ${seconds} seconds...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    showPage('landing');
+                    currentUser = null;
+                    updateScannerStatus('Ready to scan...');
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
