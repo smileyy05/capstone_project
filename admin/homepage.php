@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     body {
-      background: #f0f2f5;
+      background: #0f172a;
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
       min-height: 100vh;
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     .login-left {
       flex: 1;
-      background: #ffffff;
+      background: #1e293b;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -108,8 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       left: 0;
       right: 0;
       bottom: 0;
-      background: url('/../img/southwoods_bg.jpg') no-repeat center center;
+      background: url('../img/southwoods_bg.jpg') no-repeat center center;
       background-size: cover;
+      opacity: 0.3;
       transition: transform 0.3s ease;
     }
     
@@ -124,58 +125,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(135deg, rgba(30, 91, 184, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+      background: linear-gradient(135deg, rgba(30, 91, 184, 0.4) 0%, rgba(37, 99, 235, 0.4) 100%);
     }
     
     .logo-overlay {
       position: relative;
       z-index: 1;
       text-align: center;
-      padding: 2.5rem;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 24px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
-      max-width: 400px;
+      padding: 3rem;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      max-width: 450px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .logo-overlay img {
-      width: 180px;
+      width: 200px;
       height: auto;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     }
     
     .logo-overlay h1 {
-      font-size: 1.5rem;
-      color: #1e5bb8;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.5px;
+      font-size: 1.75rem;
+      background: linear-gradient(135deg, #1e5bb8 0%, #2563eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: 1px;
       line-height: 1.3;
     }
     
     .logo-overlay p {
-      font-size: 1rem;
-      color: #4a5568;
-      font-weight: 500;
+      font-size: 1.1rem;
+      color: #475569;
+      font-weight: 600;
+      margin-bottom: 1rem;
     }
     
     .admin-badge {
       display: inline-block;
-      background: linear-gradient(135deg, #1e5bb8 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
       color: white;
-      padding: 0.5rem 1.25rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      padding: 0.6rem 1.5rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
       margin-top: 1rem;
       text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
     }
     
     .login-right {
       flex: 1;
-      background: linear-gradient(135deg, #1e5bb8 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #1e40af 0%, #1e5bb8 100%);
       color: #fff;
       padding: 3rem;
       display: flex;
@@ -183,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       justify-content: center;
       align-items: center;
       position: relative;
-      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
     }
     
     .login-right::before {
@@ -193,40 +201,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       left: 0;
       right: 0;
       bottom: 0;
-      background: radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 60%);
+      background: 
+        radial-gradient(circle at top right, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at bottom left, rgba(255,255,255,0.1) 0%, transparent 50%);
       pointer-events: none;
     }
     
     .login-form-wrapper {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       position: relative;
       z-index: 1;
     }
     
     .login-right h2 {
-      font-size: 2rem;
+      font-size: 2.25rem;
       font-weight: 800;
       margin-bottom: 0.75rem;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-align: center;
       line-height: 1.2;
       text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     
     .login-right .subtitle {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       margin-bottom: 3rem;
       text-align: center;
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.95);
       font-weight: 400;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     }
     
     .msg-error {
       color: #dc2626;
       background: #fee2e2;
-      border-radius: 10px;
-      padding: 1rem;
+      border-radius: 12px;
+      padding: 1.1rem;
       margin-bottom: 1.5rem;
       text-align: center;
       font-weight: 600;
@@ -234,6 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       border: 2px solid #fca5a5;
       animation: slideDown 0.3s ease;
       word-break: break-word;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
     }
     
     @keyframes slideDown {
@@ -254,69 +267,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .form-group label {
       font-weight: 600;
       display: block;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.7rem;
       color: #fff;
-      font-size: 1rem;
+      font-size: 1.05rem;
       letter-spacing: 0.3px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
     
     .form-group input {
       width: 100%;
-      padding: 0.95rem 1.2rem;
-      border-radius: 10px;
-      border: none;
+      padding: 1rem 1.3rem;
+      border-radius: 12px;
+      border: 2px solid transparent;
       font-size: 1rem;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.98);
       color: #1a1a1a;
       transition: all 0.3s ease;
       font-family: inherit;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
     .form-group input::placeholder {
-      color: #9ca3af;
+      color: #94a3b8;
     }
     
     .form-group input:focus {
       outline: none;
       background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
       transform: translateY(-2px);
     }
     
     .login-btn {
       width: 100%;
-      background: linear-gradient(135deg, #1e40af 0%, #1e5bb8 100%);
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
       color: #fff;
       border: none;
-      border-radius: 10px;
-      padding: 1.1rem;
-      font-size: 1.1rem;
+      border-radius: 12px;
+      padding: 1.15rem;
+      font-size: 1.15rem;
       font-weight: 700;
       cursor: pointer;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       transition: all 0.3s ease;
       margin-top: 1rem;
       text-transform: uppercase;
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
     }
     
     .login-btn:hover {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(220, 38, 38, 0.5);
     }
     
     .login-btn:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
     }
     
     .back-link {
       width: 100%;
       background: rgba(255, 255, 255, 0.15);
       color: #fff;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      padding: 0.95rem;
-      font-size: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       cursor: pointer;
       letter-spacing: 0.5px;
@@ -327,18 +344,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      backdrop-filter: blur(10px);
     }
     
     .back-link:hover {
       background: rgba(255, 255, 255, 0.25);
       border-color: rgba(255, 255, 255, 0.5);
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     
     .back-link::before {
       content: "←";
-      font-size: 1.3rem;
+      font-size: 1.4rem;
+      font-weight: 700;
     }
     
     /* Tablet Landscape */
@@ -353,16 +373,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .logo-overlay {
-        padding: 2rem;
-        max-width: 350px;
+        padding: 2.5rem;
+        max-width: 380px;
       }
       
       .logo-overlay img {
-        width: 150px;
+        width: 170px;
       }
       
       .logo-overlay h1 {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
       }
       
       .login-right {
@@ -370,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .login-right h2 {
-        font-size: 1.75rem;
+        font-size: 2rem;
       }
     }
     
@@ -382,25 +402,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .logo-overlay {
-        padding: 1.75rem;
-        max-width: 320px;
+        padding: 2rem;
+        max-width: 340px;
       }
       
       .logo-overlay img {
-        width: 130px;
+        width: 150px;
       }
       
       .logo-overlay h1 {
-        font-size: 1.2rem;
+        font-size: 1.35rem;
       }
       
       .logo-overlay p {
-        font-size: 0.9rem;
+        font-size: 1rem;
       }
       
       .admin-badge {
-        font-size: 0.75rem;
-        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+        padding: 0.5rem 1.2rem;
       }
       
       .login-right {
@@ -408,12 +428,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .login-right h2 {
-        font-size: 1.5rem;
-        letter-spacing: 1px;
+        font-size: 1.75rem;
+        letter-spacing: 1.5px;
       }
       
       .login-right .subtitle {
-        font-size: 1rem;
+        font-size: 1.05rem;
         margin-bottom: 2rem;
       }
       
@@ -430,27 +450,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .logo-overlay {
-        padding: 1.5rem;
-        max-width: 280px;
-        border-radius: 20px;
+        padding: 1.75rem;
+        max-width: 300px;
+        border-radius: 24px;
       }
       
       .logo-overlay img {
-        width: 110px;
+        width: 130px;
       }
       
       .logo-overlay h1 {
-        font-size: 1.1rem;
-        margin-bottom: 0.4rem;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
       }
       
       .logo-overlay p {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
       }
       
       .admin-badge {
-        font-size: 0.7rem;
-        padding: 0.35rem 0.85rem;
+        font-size: 0.75rem;
+        padding: 0.45rem 1rem;
         margin-top: 0.75rem;
       }
       
@@ -459,13 +479,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .login-right h2 {
-        font-size: 1.3rem;
-        letter-spacing: 0.5px;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
         margin-bottom: 0.5rem;
       }
       
       .login-right .subtitle {
-        font-size: 0.95rem;
+        font-size: 1rem;
         margin-bottom: 1.75rem;
       }
       
@@ -478,48 +498,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .form-group label {
-        font-size: 0.95rem;
+        font-size: 1rem;
         margin-bottom: 0.5rem;
       }
       
       .form-group input {
-        padding: 0.85rem 1rem;
+        padding: 0.9rem 1.1rem;
         font-size: 0.95rem;
       }
       
       .login-btn {
-        padding: 1rem;
-        font-size: 1rem;
+        padding: 1.05rem;
+        font-size: 1.05rem;
       }
       
       .back-link {
-        padding: 0.85rem;
-        font-size: 0.95rem;
+        padding: 0.9rem;
+        font-size: 1rem;
       }
       
       .msg-error {
-        padding: 0.85rem;
-        font-size: 0.85rem;
+        padding: 0.9rem;
+        font-size: 0.9rem;
       }
     }
     
     /* Mobile Small */
     @media (max-width: 360px) {
       .logo-overlay {
-        padding: 1.25rem;
-        max-width: 260px;
+        padding: 1.5rem;
+        max-width: 280px;
       }
       
       .logo-overlay img {
-        width: 100px;
+        width: 110px;
       }
       
       .logo-overlay h1 {
-        font-size: 1rem;
+        font-size: 1.1rem;
       }
       
       .logo-overlay p {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
       }
       
       .login-right {
@@ -527,21 +547,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .login-right h2 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
       }
       
       .login-right .subtitle {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
       }
       
       .form-group input {
-        padding: 0.75rem 0.9rem;
+        padding: 0.8rem 1rem;
         font-size: 0.9rem;
       }
       
       .login-btn, .back-link {
-        padding: 0.8rem;
-        font-size: 0.9rem;
+        padding: 0.85rem;
+        font-size: 0.95rem;
       }
     }
     
@@ -562,25 +582,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .logo-overlay {
-        padding: 1.5rem;
-        max-width: 280px;
+        padding: 1.75rem;
+        max-width: 300px;
       }
       
       .logo-overlay img {
-        width: 100px;
+        width: 110px;
       }
       
       .logo-overlay h1 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
       }
       
       .login-right h2 {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
         margin-bottom: 0.5rem;
       }
       
       .login-right .subtitle {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         margin-bottom: 1.5rem;
       }
       
@@ -589,12 +609,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       .form-group input {
-        padding: 0.7rem 1rem;
+        padding: 0.75rem 1rem;
       }
       
       .login-btn, .back-link {
-        padding: 0.8rem;
-        font-size: 0.9rem;
+        padding: 0.85rem;
+        font-size: 0.95rem;
       }
     }
   </style>
@@ -638,4 +658,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </body>
 </html>
-
