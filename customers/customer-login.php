@@ -56,7 +56,7 @@ unset($_SESSION['login_error']);
       left: 0;
       right: 0;
       bottom: 0;
-      background: url('../img/southwoods_bg.jpg') no-repeat center center;
+      background: url('img/southwoods_bg.jpg') no-repeat center center;
       background-size: cover;
       transition: transform 0.3s ease;
     }
@@ -354,7 +354,7 @@ unset($_SESSION['login_error']);
   <div class="login-container">
     <div class="login-left">
       <div class="logo-overlay">
-        <img src="../img/Without-Background.png" alt="Southwoods Logo">
+        <img src="img/Without-Background.png" alt="Southwoods Logo">
         <h1>SOUTHWOODS MALL</h1>
         <p>Smart Parking System</p>
       </div>
