@@ -12,8 +12,9 @@
     }
     
     body {
-      background: url('img/southwoods_bg.jpg') no-repeat center center fixed;
+      background: url('../img/southwoods_bg.jpg') no-repeat center center fixed;
       background-size: cover;
+      background-color: #e5e7eb;
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
       min-height: 100vh;
@@ -68,6 +69,9 @@
       height: auto;
       margin-bottom: 0.5rem;
       transition: transform 0.3s ease;
+      background-color: #f3f4f6;
+      padding: 10px;
+      border-radius: 8px;
     }
     
     .main-landing .logo:hover {
@@ -420,7 +424,7 @@
 </head>
 <body>
   <div class="main-landing">
-    <img src="img/Without-Background.png" alt="Southwoods Mall Logo" class="logo">
+    <img src="../img/Without-Background.png" alt="Southwoods Mall Logo" class="logo">
     <h1>SOUTHWOODS SMART PARKING SYSTEM</h1>
     <p>Welcome! Choose an option below to get started.</p>
     <div class="btn-group">
