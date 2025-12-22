@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 
 // Include database connection
-require_once __DIR__ . '/../DB/DB_connection.php';
+require_once '../DB/DB_connection.php';
 
 // Get POST data
 $name = trim($_POST['name'] ?? '');
@@ -16,22 +16,24 @@ $fieldErrors = [];
 // Backend validation
 if ($name === '') {
     $fieldErrors['name'] = "Full Name is required!";
+} elseif (!preg_match("/^[a-zA-Z ]*$/", $name)) {
+    $fieldErrors['name'] = "Full Name can only contain letters and spaces!";
 }
-
 if ($email === '') {
     $fieldErrors['email'] = "Email Address is required!";
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $fieldErrors['email'] = "Invalid email format!";
+} elseif (!str_ends_with(strtolower($email), '@gmail.com')) {
+    $fieldErrors['email'] = "Email must end with @gmail.com!";
 }
-
 if ($plate === '') {
     $fieldErrors['plate'] = "Plate Number is required!";
+} elseif (!preg_match("/^[A-Z0-9]{1,7}$/", strtoupper($plate))) {
+    $fieldErrors['plate'] = "Plate number must be a combination of letters and numbers, up to 7 characters!";
 }
-
 if ($vehicle === '') {
     $fieldErrors['vehicle'] = "Vehicle Type is required!";
 }
-
 if ($password === '') {
     $fieldErrors['password'] = "Password is required!";
 }
@@ -59,21 +61,17 @@ if ($result && db_num_rows($result) > 0) {
     exit;
 }
 
-// Hash password
+// Insert data (hash password for security)
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// Generate unique QR code (you can customize this format)
-// Format: PLATE-TIMESTAMP
-$qr_code = strtoupper($plate) . '-' . time();
-
-// Insert data with QR code
-$sql = "INSERT INTO customers (name, email, plate, vehicle, password, balance, qr_code) 
-        VALUES (?, ?, ?, ?, ?, 0.00, ?)";
-$result = db_prepare($sql, [$name, $email, $plate, $vehicle, $hashedPassword, $qr_code]);
+$sql = "INSERT INTO customers (name, email, plate, vehicle, password) VALUES (?, ?, ?, ?, ?)";
+$result = db_prepare($sql, [$name, $email, $plate, $vehicle, $hashedPassword]);
 
 if ($result) {
     echo json_encode(["success" => "Registration successful!"]);
 } else {
     echo json_encode(["error" => "Database error: " . db_error()]);
 }
+
+// Connection will be closed automatically at script end
 ?>
