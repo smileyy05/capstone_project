@@ -213,8 +213,6 @@
         <option value="Sedan">Sedan</option>
         <option value="SUV">SUV</option>
         <option value="Van">Van</option>
-        <option value="Motorcycle">Motorcycle</option>
-        <option value="Truck">Truck</option>
       </select>
 
       <label for="password">Password*</label>
@@ -292,3 +290,4 @@
 
 </body>
 </html>
+
