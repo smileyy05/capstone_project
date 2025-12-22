@@ -12,7 +12,7 @@
     }
     
     body {
-      background: url('/img/southwoods_bg.jpg') no-repeat center center fixed;
+      background: url('img/southwoods_bg.jpg') no-repeat center center fixed;
       background-size: cover;
       background-color: #e5e7eb;
       margin: 0;
@@ -424,7 +424,7 @@
 </head>
 <body>
   <div class="main-landing">
-    <img src="/img/Without-Background.png" class="logo">
+    <img src="img/Without-Background.png" class="logo">
     <h1>SOUTHWOODS SMART PARKING SYSTEM</h1>
     <p>Welcome! Choose an option below to get started.</p>
     <div class="btn-group">
@@ -435,4 +435,3 @@
   </div>
 </body>
 </html>
-
