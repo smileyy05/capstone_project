@@ -424,7 +424,7 @@
 </head>
 <body>
   <div class="main-landing">
-    <img src="/img/Without-Background.png" alt="Southwoods Mall Logo" class="logo">
+    <img src="/img/Without-Background.png" class="logo">
     <h1>SOUTHWOODS SMART PARKING SYSTEM</h1>
     <p>Welcome! Choose an option below to get started.</p>
     <div class="btn-group">
@@ -435,3 +435,4 @@
   </div>
 </body>
 </html>
+
