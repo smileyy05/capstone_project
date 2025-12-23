@@ -39,7 +39,6 @@
             to { opacity: 1; }
         }
 
-        /* Landing Page */
         .landing-page {
             background: linear-gradient(135deg, rgba(46, 87, 185, 0.85), rgba(30, 60, 140, 0.85)),
                         url('southwoods_bg.jpg') center/cover no-repeat fixed;
@@ -171,7 +170,6 @@
             display: block;
         }
 
-        /* Thank You Page */
         .thankyou-page {
             background: white;
             width: 100%;
@@ -266,7 +264,6 @@
             color: #666;
         }
 
-        /* Loading Spinner */
         .loading {
             display: none;
             position: fixed;
@@ -330,13 +327,11 @@
     </style>
 </head>
 <body>
-    <!-- Loading Spinner -->
     <div class="loading" id="loading">
         <div class="spinner"></div>
         <div class="loading-text">Processing exit...</div>
     </div>
 
-    <!-- Landing/Scan Page -->
     <div class="page active" id="landing-page">
         <div class="landing-page">
             <div class="header">
@@ -347,22 +342,11 @@
                 <div class="scanner-indicator">
                     <div class="scanner-icon">
                         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Outer frame -->
                             <rect x="10" y="10" width="180" height="180" fill="none" stroke="white" stroke-width="4" rx="8"/>
-                            
-                            <!-- Corner brackets - Top Left -->
                             <path d="M 30 30 L 30 60 M 30 30 L 60 30" stroke="white" stroke-width="8" stroke-linecap="round"/>
-                            
-                            <!-- Corner brackets - Top Right -->
                             <path d="M 170 30 L 170 60 M 170 30 L 140 30" stroke="white" stroke-width="8" stroke-linecap="round"/>
-                            
-                            <!-- Corner brackets - Bottom Left -->
                             <path d="M 30 170 L 30 140 M 30 170 L 60 170" stroke="white" stroke-width="8" stroke-linecap="round"/>
-                            
-                            <!-- Corner brackets - Bottom Right -->
                             <path d="M 170 170 L 170 140 M 170 170 L 140 170" stroke="white" stroke-width="8" stroke-linecap="round"/>
-                            
-                            <!-- QR CODE text -->
                             <text x="100" y="105" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="Arial, sans-serif">QR CODE</text>
                         </svg>
                     </div>
@@ -373,7 +357,6 @@
         </div>
     </div>
 
-    <!-- Thank You Page -->
     <div class="page" id="thankyou-page">
         <div class="thankyou-page">
             <div class="header">
@@ -396,44 +379,44 @@
     </div>
 
     <script>
+        // CRITICAL: Set this to '' (empty string) since your PHP files are in the root directory
+        const API_BASE = '';
+        
         let currentUser = null;
         let parkingLogId = null;
         let countdownInterval = null;
         let scanBuffer = '';
         let scanTimeout = null;
         let isScanning = false;
-        let scanCooldown = null;
+        let scanCooldownTimer = null;
 
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('Hardware scanner ready for exit');
+            console.log('🔧 Hardware scanner ready for exit');
             resetBalances();
             initializeHardwareScanner();
         });
 
         function initializeHardwareScanner() {
-            // Listen for keyboard input from hardware scanner
             document.addEventListener('keypress', handleScannerInput);
-            
-            // Also listen for paste events (some scanners use clipboard)
             document.addEventListener('paste', (e) => {
                 e.preventDefault();
                 const pastedData = e.clipboardData.getData('text');
-                if (pastedData) {
+                if (pastedData && !isScanning) {
                     processScan(pastedData.trim());
                 }
             });
-
             console.log('✅ Hardware scanner initialized for exit');
         }
 
         function handleScannerInput(event) {
-            // Ignore input when on thank you page
+            // Only process on landing page
             if (!document.getElementById('landing-page').classList.contains('active')) {
                 return;
             }
 
-            // Prevent scanning if in cooldown
+            // Block input during cooldown
             if (isScanning) {
+                event.preventDefault();
                 return;
             }
 
@@ -442,36 +425,33 @@
                 clearTimeout(scanTimeout);
             }
 
-            // Hardware scanners typically send data very quickly
-            // If the key is Enter, process the accumulated buffer
+            // Handle Enter key
             if (event.key === 'Enter' || event.keyCode === 13) {
                 event.preventDefault();
-                if (scanBuffer.length > 0 && !isScanning) {
-                    updateScannerStatus('Processing exit...', true);
+                if (scanBuffer.length > 0) {
                     processScan(scanBuffer.trim());
                     scanBuffer = '';
                 }
                 return;
             }
 
-            // Accumulate the scan data
+            // Accumulate characters
             scanBuffer += event.key;
 
-            // Auto-process after 100ms of no input (scanner finished)
+            // Auto-process after 100ms of no input
             scanTimeout = setTimeout(() => {
-                if (scanBuffer.length > 5 && !isScanning) { // Minimum QR code length
-                    updateScannerStatus('Processing exit...', true);
+                if (scanBuffer.length > 5) {
                     processScan(scanBuffer.trim());
                     scanBuffer = '';
                 }
             }, 100);
         }
 
-        function updateScannerStatus(message, isScanning = false) {
+        function updateScannerStatus(message, scanning = false) {
             const statusElement = document.querySelector('.scanner-status');
             if (statusElement) {
                 statusElement.textContent = message;
-                if (isScanning) {
+                if (scanning) {
                     statusElement.classList.add('scanning');
                 } else {
                     statusElement.classList.remove('scanning');
@@ -480,6 +460,7 @@
         }
 
         function processScan(qrData) {
+            // Validate input
             if (!qrData || qrData.length === 0) {
                 updateScannerStatus('Ready to scan...');
                 showError('Invalid scan data');
@@ -488,140 +469,188 @@
 
             // Prevent double scanning
             if (isScanning) {
-                console.log('Scan blocked - cooldown active');
+                console.log('⏸️ Scan blocked - cooldown active');
                 return;
             }
 
+            // Set scanning state
             isScanning = true;
-            console.log('Processing exit scan:', qrData);
+            console.log('🔍 Processing exit scan:', qrData);
+            updateScannerStatus('Processing exit...', true);
+
+            // Process the exit
             processExit(qrData);
 
-            // Set 5-second cooldown
-            if (scanCooldown) {
-                clearTimeout(scanCooldown);
-            }
+            // Start cooldown period (5 seconds)
+            startCooldown();
+        }
 
+        function startCooldown() {
             let cooldownSeconds = 5;
             updateScannerStatus(`Please wait ${cooldownSeconds}s...`, true);
 
-            scanCooldown = setInterval(() => {
+            // Clear any existing cooldown
+            if (scanCooldownTimer) {
+                clearInterval(scanCooldownTimer);
+            }
+
+            // Countdown timer
+            scanCooldownTimer = setInterval(() => {
                 cooldownSeconds--;
                 if (cooldownSeconds > 0) {
                     updateScannerStatus(`Please wait ${cooldownSeconds}s...`, true);
                 } else {
-                    clearInterval(scanCooldown);
+                    clearInterval(scanCooldownTimer);
+                    scanCooldownTimer = null;
                     isScanning = false;
+                    scanBuffer = '';
                     updateScannerStatus('Ready to scan...');
-                    scanBuffer = ''; // Clear any accumulated buffer
+                    console.log('✅ Cooldown complete - ready for next scan');
                 }
             }, 1000);
         }
 
+        function resetCooldown() {
+            if (scanCooldownTimer) {
+                clearInterval(scanCooldownTimer);
+                scanCooldownTimer = null;
+            }
+            isScanning = false;
+            scanBuffer = '';
+            updateScannerStatus('Ready to scan...');
+        }
+
         function resetBalances() {
-            fetch('reset_balances.php', {
+            fetch(API_BASE + 'reset_balances.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('✅ All customer balances reset to ₱500.00 for testing');
+                    console.log('✅ Balances reset to ₱500.00');
+                } else {
+                    console.warn('⚠️ Balance reset failed:', data.message);
                 }
             })
-            .catch(error => console.error('Error resetting balances:', error));
+            .catch(error => console.error('❌ Reset error:', error));
         }
 
         function showPage(pageName) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(pageName + '-page').classList.add('active');
+            const targetPage = document.getElementById(pageName + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
         }
 
         function showLoading(show) {
-            document.getElementById('loading').classList.toggle('active', show);
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) {
+                loadingEl.classList.toggle('active', show);
+            }
         }
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('active');
-            setTimeout(() => {
-                errorDiv.classList.remove('active');
-            }, 5000);
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.classList.add('active');
+                setTimeout(() => {
+                    errorDiv.classList.remove('active');
+                }, 5000);
+            }
+            console.error('❌ Error:', message);
         }
 
         function processExit(qrData) {
             showLoading(true);
             
-            // Verify exit and get fee
-            fetch('verify_exit.php', {
+            // Step 1: Verify exit and calculate fee
+            fetch(API_BASE + 'verify_exit.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ qr_code: qrData })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('📥 Verify exit response:', data);
+                
                 if (!data.success) {
                     showLoading(false);
-                    updateScannerStatus('Ready to scan...');
+                    resetCooldown();
                     showError(data.message || 'Exit verification failed');
-                    return;
+                    return Promise.reject('Verification failed');
                 }
 
                 currentUser = data.customer;
                 parkingLogId = data.log_id;
-                const fee = data.fee;
-                const durationText = data.duration_text;
 
-                // Complete the exit
-                return fetch('complete_exit.php', {
+                // Step 2: Complete the exit
+                return fetch(API_BASE + 'complete_exit.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         log_id: parkingLogId,
                         customer_id: currentUser.id
                     })
-                }).then(response => response.json())
-                  .then(exitData => ({ ...data, exitData }));
+                });
             })
-            .then(result => {
-                showLoading(false);
-
-                if (result && result.exitData && result.exitData.success) {
-                    showThankYouPage(
-                        currentUser.name,
-                        result.fee,
-                        result.duration_text
-                    );
-                } else if (result) {
-                    updateScannerStatus('Ready to scan...');
-                    showError(result.exitData.message || 'Failed to complete exit');
+            .then(response => {
+                if (!response) return null;
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                return response.json();
+            })
+            .then(exitData => {
+                if (!exitData) return;
+                console.log('📥 Complete exit response:', exitData);
+                
+                if (!exitData.success) {
+                    showLoading(false);
+                    resetCooldown();
+                    showError(exitData.message || 'Failed to complete exit');
+                    return Promise.reject('Exit completion failed');
+                }
+
+                // Show thank you page with the exit data
+                showLoading(false);
+                showThankYouPage(
+                    currentUser.name,
+                    exitData.fee,
+                    exitData.duration_text
+                );
             })
             .catch(error => {
+                console.error('❌ Error:', error);
                 showLoading(false);
-                updateScannerStatus('Ready to scan...');
-                isScanning = false;
-                if (scanCooldown) clearInterval(scanCooldown);
-                showError('Connection error. Please try again.');
-                console.error('Error:', error);
+                resetCooldown();
+                if (error.message && error.message !== 'Verification failed' && error.message !== 'Exit completion failed') {
+                    showError('Connection error. Please check your internet connection and try again.');
+                }
             });
         }
 
         function showThankYouPage(name, fee, durationText) {
-            // Update thank you page content
             document.getElementById('userName').textContent = `${name.toUpperCase()}!`;
             document.getElementById('parkingFee').textContent = `₱${parseFloat(fee).toFixed(2)}`;
             document.getElementById('durationInfo').textContent = `Duration: ${durationText}`;
 
-            // Show thank you page
             showPage('thankyou');
 
-            // Start countdown
             let seconds = 5;
             document.getElementById('countdown').textContent = `Returning to scan page in ${seconds} seconds...`;
 
-            if (countdownInterval) clearInterval(countdownInterval);
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
             
             countdownInterval = setInterval(() => {
                 seconds--;
@@ -629,10 +658,11 @@
                     document.getElementById('countdown').textContent = `Returning to scan page in ${seconds} seconds...`;
                 } else {
                     clearInterval(countdownInterval);
+                    countdownInterval = null;
                     showPage('landing');
                     currentUser = null;
                     parkingLogId = null;
-                    updateScannerStatus('Ready to scan...');
+                    // Don't reset cooldown here - let it finish naturally
                 }
             }, 1000);
         }
