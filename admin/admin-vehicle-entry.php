@@ -14,10 +14,18 @@ if (isset($_GET['archived']) && $_GET['archived'] === 'success') {
     $success = 'Customer has been archived successfully!';
 }
 
-// UPDATED: Only get non-archived customers
-// PostgreSQL uses boolean, so we check for false or NULL
-$sql = "SELECT * FROM customers WHERE (archived = false OR archived IS NULL) ORDER BY id DESC";
+// Get ALL customers (remove archived filter to see everyone)
+$sql = "SELECT * FROM customers ORDER BY id DESC";
 $result = db_query($sql);
+
+// Debug information
+$debug_info = '';
+if ($result) {
+    $row_count = db_num_rows($result);
+    $debug_info = "Found $row_count customers in database";
+} else {
+    $debug_info = "Query failed or returned no result";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,6 +167,16 @@ $result = db_query($sql);
       margin-bottom: 1.5rem;
       font-weight: 600;
       border-left: 4px solid #16a34a;
+    }
+    
+    .msg-debug {
+      background: #e0f2fe;
+      color: #0c4a6e;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      border-left: 4px solid #0284c7;
     }
     
     .vehicle-table-container {
@@ -334,6 +352,9 @@ $result = db_query($sql);
         <?php if($success): ?>
           <div class="msg-success"><?php echo $success; ?></div>
         <?php endif; ?>
+        
+        <!-- Debug Information -->
+        <div class="msg-debug"><?php echo $debug_info; ?></div>
         
         <div class="vehicle-table-container">
           <table class="vehicle-table" id="vehicleTable">
