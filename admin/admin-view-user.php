@@ -993,6 +993,11 @@ $historyResult = db_prepare(
 <div class="admin-dashboard">
 <main class="admin-main">
 
+<div class="admin-header">
+<a href="admin-vehicle-entry.php" class="back-btn">← Back to Vehicle Entry</a>
+<h1 style="margin: 0; font-size: 1.5rem; flex: 1;">User Details</h1>
+</div>
+
 <div class="admin-content">
 
 <?php if ($success): ?>
