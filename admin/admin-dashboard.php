@@ -512,8 +512,8 @@ try {
       <div class="admin-header">
         <span>WELCOME, ADMIN!</span>
         <div class="header-buttons">
-          <button class="btn-enter" onclick="window.location.href='../website/enter.html'">🚗 ENTER</button>
-          <button class="btn-exit" onclick="window.location.href='../website/exit.html'">🚙 EXIT</button>
+           <button class="btn-enter" onclick="window.location.href='website/enter.html'">🚗 ENTER</button>
+            <button class="btn-exit" onclick="window.location.href='website/exit.html'">🚙 EXIT</button>
           <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
         </div>
       </div>
@@ -575,3 +575,4 @@ try {
   </script>
 </body>
 </html>
+
