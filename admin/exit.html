@@ -379,7 +379,6 @@
     </div>
 
     <script>
-        // CRITICAL: Set this to '' (empty string) since your PHP files are in the root directory
         const API_BASE = '';
         
         let currentUser = null;
@@ -392,7 +391,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             console.log('🔧 Hardware scanner ready for exit');
-            resetBalances();
             initializeHardwareScanner();
         });
 
@@ -409,23 +407,19 @@
         }
 
         function handleScannerInput(event) {
-            // Only process on landing page
             if (!document.getElementById('landing-page').classList.contains('active')) {
                 return;
             }
 
-            // Block input during cooldown
             if (isScanning) {
                 event.preventDefault();
                 return;
             }
 
-            // Clear previous timeout
             if (scanTimeout) {
                 clearTimeout(scanTimeout);
             }
 
-            // Handle Enter key
             if (event.key === 'Enter' || event.keyCode === 13) {
                 event.preventDefault();
                 if (scanBuffer.length > 0) {
@@ -435,10 +429,8 @@
                 return;
             }
 
-            // Accumulate characters
             scanBuffer += event.key;
 
-            // Auto-process after 100ms of no input
             scanTimeout = setTimeout(() => {
                 if (scanBuffer.length > 5) {
                     processScan(scanBuffer.trim());
@@ -460,28 +452,22 @@
         }
 
         function processScan(qrData) {
-            // Validate input
             if (!qrData || qrData.length === 0) {
                 updateScannerStatus('Ready to scan...');
                 showError('Invalid scan data');
                 return;
             }
 
-            // Prevent double scanning
             if (isScanning) {
                 console.log('⏸️ Scan blocked - cooldown active');
                 return;
             }
 
-            // Set scanning state
             isScanning = true;
             console.log('🔍 Processing exit scan:', qrData);
             updateScannerStatus('Processing exit...', true);
 
-            // Process the exit
             processExit(qrData);
-
-            // Start cooldown period (5 seconds)
             startCooldown();
         }
 
@@ -489,12 +475,10 @@
             let cooldownSeconds = 5;
             updateScannerStatus(`Please wait ${cooldownSeconds}s...`, true);
 
-            // Clear any existing cooldown
             if (scanCooldownTimer) {
                 clearInterval(scanCooldownTimer);
             }
 
-            // Countdown timer
             scanCooldownTimer = setInterval(() => {
                 cooldownSeconds--;
                 if (cooldownSeconds > 0) {
@@ -518,22 +502,6 @@
             isScanning = false;
             scanBuffer = '';
             updateScannerStatus('Ready to scan...');
-        }
-
-        function resetBalances() {
-            fetch(API_BASE + 'reset_balances.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('✅ Balances reset to ₱500.00');
-                } else {
-                    console.warn('⚠️ Balance reset failed:', data.message);
-                }
-            })
-            .catch(error => console.error('❌ Reset error:', error));
         }
 
         function showPage(pageName) {
@@ -567,7 +535,6 @@
         function processExit(qrData) {
             showLoading(true);
             
-            // Step 1: Verify exit and calculate fee
             fetch(API_BASE + 'verify_exit.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -592,7 +559,6 @@
                 currentUser = data.customer;
                 parkingLogId = data.log_id;
 
-                // Step 2: Complete the exit
                 return fetch(API_BASE + 'complete_exit.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -620,7 +586,6 @@
                     return Promise.reject('Exit completion failed');
                 }
 
-                // Show thank you page with the exit data
                 showLoading(false);
                 showThankYouPage(
                     currentUser.name,
@@ -662,7 +627,6 @@
                     showPage('landing');
                     currentUser = null;
                     parkingLogId = null;
-                    // Don't reset cooldown here - let it finish naturally
                 }
             }, 1000);
         }
