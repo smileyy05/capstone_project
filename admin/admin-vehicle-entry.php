@@ -18,6 +18,25 @@ if (isset($_GET['archived']) && $_GET['archived'] === 'success') {
 // PostgreSQL uses boolean, so we check for false or NULL
 $sql = "SELECT * FROM customers WHERE (archived = false OR archived IS NULL) ORDER BY id DESC";
 $result = db_query($sql);
+
+// DEBUG: Check what's happening
+echo "<div style='background: #fff3cd; padding: 10px; margin: 10px; border-radius: 5px;'>";
+echo "DEBUG INFO:<br>";
+echo "Query: " . $sql . "<br>";
+echo "Number of rows: " . db_num_rows($result) . "<br>";
+
+// Check if customers exist at all
+$test_sql = "SELECT COUNT(*) as total FROM customers";
+$test_result = db_query($test_sql);
+$test_row = db_fetch_assoc($test_result);
+echo "Total customers in database: " . $test_row['total'] . "<br>";
+
+// Check archived status
+$archived_sql = "SELECT COUNT(*) as archived_count FROM customers WHERE archived = true";
+$archived_result = db_query($archived_sql);
+$archived_row = db_fetch_assoc($archived_result);
+echo "Archived customers: " . $archived_row['archived_count'] . "<br>";
+echo "</div>";
 ?>
 <!DOCTYPE html>
 <html lang="en">
