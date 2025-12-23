@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Include database connection
-require_once __DIR__ . '/../DB/DB_connection.php';
+require_once '../DB/DB_connection.php';
 
 echo "<h2>Testing Duplicate Entry Prevention</h2>";
 
@@ -106,5 +106,4 @@ if ($result && db_num_rows($result) > 0) {
 } else {
     echo "No customers found!";
 }
-
 ?>
