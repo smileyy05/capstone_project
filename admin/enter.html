@@ -382,7 +382,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             console.log('🔧 Hardware scanner ready');
-            resetBalances();
             initializeHardwareScanner();
         });
 
@@ -508,22 +507,6 @@
             isScanning = false;
             scanBuffer = '';
             updateScannerStatus('Ready to scan...');
-        }
-
-        function resetBalances() {
-            fetch(API_BASE + 'reset_balances.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('✅ Balances reset to ₱500.00');
-                } else {
-                    console.warn('⚠️ Balance reset failed:', data.message);
-                }
-            })
-            .catch(error => console.error('❌ Reset error:', error));
         }
 
         function showPage(pageName) {
