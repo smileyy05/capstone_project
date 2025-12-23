@@ -17,21 +17,20 @@ $availableSlots = $totalSlots;
 
 try {
     // Calculate Total Earnings
-    // Sum all parking fees from vehicles that have exited (exit_time is not null)
     $earningsQuery = "SELECT COALESCE(SUM(parking_fee), 0) as total FROM parking_logs WHERE exit_time IS NOT NULL";
     $earningsResult = db_query($earningsQuery);
     if ($earningsResult && $row = db_fetch_assoc($earningsResult)) {
         $totalEarnings = $row['total'] ?? 0;
     }
 
-    // Count Departed Vehicles (vehicles that have exit_time set)
+    // Count Departed Vehicles
     $departedQuery = "SELECT COUNT(*) as count FROM parking_logs WHERE exit_time IS NOT NULL";
     $departedResult = db_query($departedQuery);
     if ($departedResult && $row = db_fetch_assoc($departedResult)) {
         $departedVehicles = $row['count'] ?? 0;
     }
 
-    // Count Occupied Slots (currently parked vehicles - no exit_time)
+    // Count Occupied Slots
     $occupiedQuery = "SELECT COUNT(*) as count FROM parking_logs WHERE exit_time IS NULL";
     $occupiedResult = db_query($occupiedQuery);
     if ($occupiedResult && $row = db_fetch_assoc($occupiedResult)) {
@@ -42,7 +41,6 @@ try {
     $availableSlots = $totalSlots - $occupiedSlots;
 
 } catch (Exception $e) {
-    // Log error but don't show to user
     error_log("Dashboard Error: " . $e->getMessage());
 }
 ?>
@@ -70,7 +68,6 @@ try {
       min-height: 100vh;
     }
     
-    /* Mobile menu toggle */
     .menu-toggle {
       display: none;
       position: fixed;
@@ -167,12 +164,18 @@ try {
       letter-spacing: 1px;
     }
     
+    .header-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
     .admin-header button {
       background: transparent;
       border: 2px solid #fff;
       color: #fff;
       border-radius: 8px;
-      padding: 0.6rem 2rem;
+      padding: 0.6rem 1.5rem;
       font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
@@ -186,6 +189,28 @@ try {
       color: #1e5bb8;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-enter {
+      background: #22c55e !important;
+      border-color: #22c55e !important;
+    }
+    
+    .btn-enter:hover {
+      background: #16a34a !important;
+      color: #fff !important;
+      border-color: #16a34a !important;
+    }
+    
+    .btn-exit {
+      background: #ef4444 !important;
+      border-color: #ef4444 !important;
+    }
+    
+    .btn-exit:hover {
+      background: #dc2626 !important;
+      color: #fff !important;
+      border-color: #dc2626 !important;
     }
     
     .admin-content {
@@ -273,7 +298,6 @@ try {
       color: #065f46;
     }
     
-    /* Overlay for mobile sidebar */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -289,7 +313,6 @@ try {
       display: block;
     }
     
-    /* Tablet responsive */
     @media (max-width: 1024px) {
       .admin-sidebar {
         width: 200px;
@@ -314,7 +337,6 @@ try {
       }
     }
     
-    /* Mobile responsive */
     @media (max-width: 768px) {
       .menu-toggle {
         display: block;
@@ -351,8 +373,12 @@ try {
         margin-bottom: 0.5rem;
       }
       
-      .admin-header button {
+      .header-buttons {
         width: 100%;
+      }
+      
+      .admin-header button {
+        flex: 1;
         padding: 0.7rem;
       }
       
@@ -379,7 +405,6 @@ try {
       }
     }
     
-    /* Small mobile devices */
     @media (max-width: 480px) {
       .admin-sidebar {
         width: 220px;
@@ -424,7 +449,6 @@ try {
       }
     }
     
-    /* Extra small devices */
     @media (max-width: 360px) {
       .admin-card .card-value {
         font-size: 2rem;
@@ -435,7 +459,6 @@ try {
       }
     }
     
-    /* Landscape mobile orientation */
     @media (max-height: 600px) and (orientation: landscape) {
       .admin-sidebar {
         padding: 1rem 0.75rem;
@@ -488,7 +511,11 @@ try {
     <main class="admin-main">
       <div class="admin-header">
         <span>WELCOME, ADMIN!</span>
-        <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
+        <div class="header-buttons">
+          <button class="btn-enter" onclick="window.location.href='enter.html'">🚗 ENTER</button>
+          <button class="btn-exit" onclick="window.location.href='exit.html'">🚙 EXIT</button>
+          <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
+        </div>
       </div>
       
       <div class="admin-content">
@@ -518,7 +545,6 @@ try {
   </div>
   
   <script>
-    // Toggle sidebar for mobile
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.querySelector('.sidebar-overlay');
@@ -526,7 +552,6 @@ try {
       overlay.classList.toggle('active');
     }
     
-    // Close sidebar when clicking on a link (mobile)
     document.querySelectorAll('.admin-sidebar a').forEach(link => {
       link.addEventListener('click', function() {
         if (window.innerWidth <= 768) {
@@ -535,7 +560,6 @@ try {
       });
     });
     
-    // Handle window resize
     window.addEventListener('resize', function() {
       if (window.innerWidth > 768) {
         const sidebar = document.getElementById('sidebar');
@@ -545,7 +569,6 @@ try {
       }
     });
     
-    // Auto-refresh dashboard every 5 seconds
     setInterval(function() {
       location.reload();
     }, 5000);
