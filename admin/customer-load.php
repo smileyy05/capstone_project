@@ -16,13 +16,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = "Amount must be a whole number greater than 0!";
     } else {
         try {
-            // Authenticate customer
+            // Authenticate customer - fetch id, password AND current balance
             $result = db_prepare("SELECT id, password, balance FROM customers WHERE email = $1", [$email]);
             $customer = db_fetch_assoc($result);
 
             if ($customer && password_verify($password, $customer['password'])) {
-                $new_balance = $customer['balance'] + intval($amount);
+                // Calculate new balance
+                $new_balance = floatval($customer['balance']) + floatval($amount);
 
+                // Update using customer ID
                 $updateResult = db_prepare("UPDATE customers SET balance = $1 WHERE id = $2", [$new_balance, $customer['id']]);
                 
                 if ($updateResult) {
@@ -202,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
 
-    input[type="submit]:active {
+    input[type="submit"]:active {
       transform: translateY(0);
     }
 
@@ -257,19 +259,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       text-decoration: underline;
     }
 
-    /* Tablet Styles (768px - 1024px) */
-    @media (max-width: 1024px) {
-      .container {
-        max-width: 420px;
-        padding: 2.25rem;
-      }
-
-      .header h2 {
-        font-size: 1.7rem;
-      }
-    }
-
-    /* Mobile Styles (up to 767px) */
     @media (max-width: 767px) {
       body {
         padding: 1rem 0.75rem;
@@ -281,103 +270,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         max-width: 100%;
       }
 
-      .header {
-        margin-bottom: 1.75rem;
-      }
-
       .header h2 {
         font-size: 1.6rem;
       }
-
-      .header p {
-        font-size: 0.9rem;
-      }
-
-      .form-group {
-        margin-bottom: 1.25rem;
-      }
-
-      label {
-        font-size: 0.9rem;
-      }
-
-      input[type="text"],
-      input[type="password"] {
-        padding: 0.8rem 0.875rem;
-        font-size: 0.95rem;
-      }
-
-      .amount-input-wrapper input {
-        padding-left: 2rem;
-      }
-
-      .quick-amounts {
-        gap: 0.4rem;
-      }
-
-      .quick-amount-btn {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-      }
-
-      input[type="submit"] {
-        padding: 0.875rem;
-        font-size: 1rem;
-        margin-top: 1.25rem;
-      }
-
-      .message {
-        padding: 0.875rem 1rem;
-        font-size: 0.95rem;
-      }
     }
 
-    /* Small Mobile Styles (up to 480px) */
     @media (max-width: 480px) {
-      body {
-        padding: 0.875rem 0.5rem;
-      }
-
       .container {
         padding: 1.75rem 1.25rem;
-        border-radius: 14px;
-      }
-
-      .header {
-        margin-bottom: 1.5rem;
       }
 
       .header h2 {
         font-size: 1.4rem;
-      }
-
-      .header p {
-        font-size: 0.85rem;
-      }
-
-      .form-group {
-        margin-bottom: 1.15rem;
-      }
-
-      label {
-        font-size: 0.875rem;
-        margin-bottom: 0.4rem;
-      }
-
-      input[type="text"],
-      input[type="password"] {
-        padding: 0.75rem 0.875rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-      }
-
-      .amount-input-wrapper::before {
-        font-size: 1rem;
-        left: 0.875rem;
-      }
-
-      .amount-input-wrapper input {
-        padding-left: 1.875rem;
       }
 
       .quick-amounts {
@@ -388,113 +292,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       .quick-amount-btn {
         padding: 0.45rem 0.25rem;
         font-size: 0.75rem;
-        border-radius: 6px;
-      }
-
-      input[type="submit"] {
-        padding: 0.8rem;
-        font-size: 0.95rem;
-        border-radius: 8px;
-      }
-
-      .message {
-        padding: 0.75rem 0.875rem;
-        font-size: 0.875rem;
-        margin-top: 1.25rem;
-      }
-
-      .back-link {
-        margin-top: 1.25rem;
-      }
-
-      .back-link a {
-        font-size: 0.875rem;
-      }
-    }
-
-    /* Extra Small Mobile (up to 360px) */
-    @media (max-width: 360px) {
-      body {
-        padding: 0.75rem 0.4rem;
-      }
-
-      .container {
-        padding: 1.5rem 1rem;
-        border-radius: 12px;
-      }
-
-      .header h2 {
-        font-size: 1.3rem;
-      }
-
-      .header p {
-        font-size: 0.8rem;
-      }
-
-      input[type="text"],
-      input[type="password"] {
-        padding: 0.7rem 0.75rem;
-        font-size: 0.875rem;
-      }
-
-      .quick-amounts {
-        gap: 0.3rem;
-      }
-
-      .quick-amount-btn {
-        padding: 0.4rem 0.2rem;
-        font-size: 0.7rem;
-      }
-
-      input[type="submit"] {
-        padding: 0.75rem;
-        font-size: 0.9rem;
-      }
-    }
-
-    /* Landscape Mobile */
-    @media (max-height: 500px) and (orientation: landscape) {
-      body {
-        padding: 0.75rem;
-      }
-
-      .container {
-        padding: 1.5rem;
-        max-width: 600px;
-      }
-
-      .header {
-        margin-bottom: 1.25rem;
-      }
-
-      .header h2 {
-        font-size: 1.4rem;
-      }
-
-      .form-group {
-        margin-bottom: 1rem;
-      }
-
-      input[type="submit"] {
-        margin-top: 1rem;
-        padding: 0.75rem;
-      }
-
-      .message {
-        margin-top: 1rem;
-        padding: 0.75rem 1rem;
-      }
-    }
-
-    /* Very Wide Screens */
-    @media (min-width: 1440px) {
-      .container {
-        max-width: 500px;
-        padding: 3rem;
-      }
-
-      .header h2 {
-        font-size: 2rem;
       }
     }
   </style>
@@ -560,7 +357,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       document.getElementById('amount').value = value;
     }
 
-    // Add enter key support for quick amount buttons
     document.querySelectorAll('.quick-amount-btn').forEach(btn => {
       btn.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -570,7 +366,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       });
     });
 
-    // Add loading state to submit button
     const form = document.querySelector('form');
     const submitBtn = document.querySelector('input[type="submit"]');
     
