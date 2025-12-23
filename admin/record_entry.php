@@ -5,33 +5,30 @@ ini_set('display_errors', 1);
 header('Content-Type: application/json');
 
 // Include database connection
-require_once __DIR__ . '/../DB/DB_connection.php';
+require_once '../DB/DB_connection.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
-$qr_code = $data['qr_code'] ?? null;
+$customer_id = $data['customer_id'] ?? null;
+$qr_code = isset($data['qr_code']) ? trim($data['qr_code']) : null;
 
-if (!$qr_code) {
-    echo json_encode(["success" => false, "message" => "QR code required"]);
+if (!$customer_id || !$qr_code) {
+    echo json_encode(["success" => false, "message" => "Customer ID and QR code required"]);
     exit;
 }
 
-// Look up customer by QR code
-$sql = "SELECT id, name, email, plate, vehicle, balance, qr_code FROM customers WHERE qr_code = ? AND archived = 0";
-$result = db_prepare($sql, [$qr_code]);
+// Get customer details with cleaned QR code matching
+$customer_sql = "SELECT id, name, email, plate, vehicle, balance, qr_code 
+                 FROM customers 
+                 WHERE id = ? AND archived = 0
+                 LIMIT 1";
+$customer_result = db_prepare($customer_sql, [$customer_id]);
 
-if (!$result) {
-    echo json_encode(["success" => false, "message" => "Database error: " . db_error()]);
+if (!$customer_result || db_num_rows($customer_result) === 0) {
+    echo json_encode(["success" => false, "message" => "Customer not found"]);
     exit;
 }
 
-$customer = db_fetch_assoc($result);
-
-if (!$customer) {
-    echo json_encode(["success" => false, "message" => "Invalid QR code or account archived"]);
-    exit;
-}
-
-$customer_id = $customer['id'];
+$customer = db_fetch_assoc($customer_result);
 
 // Check if customer balance is sufficient (minimum ₱30)
 if ($customer['balance'] < 30) {
@@ -100,7 +97,7 @@ try {
     $update_slots_sql = "UPDATE parking_slots 
                          SET available_spaces = available_spaces - 1,
                              occupied_spaces = occupied_spaces + 1
-                         WHERE id = 1";
+                         WHERE id = 1 AND available_spaces > 0";
     
     if (!db_query($update_slots_sql)) {
         throw new Exception("Failed to update parking slots: " . db_error());
@@ -133,5 +130,4 @@ try {
         "message" => "Entry failed: " . $e->getMessage()
     ]);
 }
-
 ?>
