@@ -298,14 +298,12 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       color: #1e5bb8;
       font-size: 1.8rem;
       margin-bottom: 0.5rem;
-      word-wrap: break-word;
     }
     
     .user-basic-info p {
       color: #64748b;
       font-size: 1rem;
       margin-bottom: 0.3rem;
-      word-wrap: break-word;
     }
     
     .user-details-grid {
@@ -336,7 +334,6 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
       font-size: 1.1rem;
       color: #1a1a1a;
       font-weight: 600;
-      word-wrap: break-word;
     }
     
     .balance-value {
@@ -991,134 +988,56 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
               <h2><?php echo htmlspecialchars($user['name']); ?></h2>
               <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
               <p><strong>User ID:</strong> #<?php echo htmlspecialchars($user['id']); ?></p>
-              <p><strong>Member Since:</strong> <?php echo date('F d, Y', strtotime($user['created_at'])); ?></p
-            </div>
-          </div>
-          
-          <div class="user-details-grid">
-            <div class="detail-item">
-              <label>Plate Number</label>
-              <div class="value"><?php echo htmlspecialchars($user['plate']); ?></div>
-            </div>
-            
-            <div class="detail-item">
-              <label>Vehicle Type</label>
-              <div class="value"><?php echo htmlspecialchars($user['vehicle'] ?? 'N/A'); ?></div>
-            </div>
-            
-            <div class="detail-item">
-              <label>Account Balance</label>
-              <div class="balance-value">₱<?php echo number_format($user['balance'], 2); ?></div>
-            </div>
-            
-            <div class="detail-item">
-              <label>Contact Number</label>
-              <div class="value"><?php echo htmlspecialchars($user['contact'] ?? 'N/A'); ?></div>
-            </div>
-          </div>
-          
-          <div class="reload-section">
-            <h3>💳 Reload Customer Balance</h3>
-            <form method="POST" class="reload-form">
-              <div class="form-group">
-                <label for="reload_amount">Amount to Reload</label>
-                <input type="number" id="reload_amount" name="reload_amount" 
-                       placeholder="Enter amount (e.g., 100)" 
-                       min="1" step="0.01" required>
-              </div>
-              <button type="submit" name="reload_balance" class="btn-reload">Reload Balance</button>
-            </form>
-          </div>
-          
-          <div class="action-buttons">
-            <button class="btn-archive" onclick="showArchiveModal()">📦 Archive Customer</button>
-          </div>
-        </div>
-        
-        <div class="history-section">
-          <h3>Recent Parking History</h3>
-          <?php if ($historyResult && db_num_rows($historyResult) > 0): ?>
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th>Entry Time</th>
-                <th>Exit Time</th>
-                <th>Duration</th>
-                <th>Fee</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php while($log = db_fetch_assoc($historyResult)): ?>
-              <tr>
-                <td><?php echo date('M d, Y h:i A', strtotime($log['entry_time'])); ?></td>
-                <td>
-                  <?php 
-                  echo $log['exit_time'] 
-                    ? date('M d, Y h:i A', strtotime($log['exit_time'])) 
-                    : '<span class="status-badge status-active">Currently Parked</span>'; 
-                  ?>
-                </td>
-                <td><?php echo $log['duration'] ?? 'N/A'; ?></td>
-                <td>₱<?php echo number_format($log['parking_fee'] ?? 0, 2); ?></td>
-                <td>
-                  <?php if ($log['exit_time']): ?>
-                    <span class="status-badge status-completed">Completed</span>
-                  <?php else: ?>
-                    <span class="status-badge status-active">Active</span>
-                  <?php endif; ?>
-                </td>
-              </tr>
-              <?php endwhile; ?>
-            </tbody>
-          </table>
-          <?php else: ?>
-          <div class="empty-history">
-            <p>No parking history found for this customer.</p>
-          </div>
-          <?php endif; ?>
+              <p><strong>Member Since:</strong> December 23, 2025</p>
         </div>
       </div>
-    </main>
-  </div>
-  
-  <!-- Archive Confirmation Modal -->
-  <div class="modal-overlay" id="archiveModal">
-    <div class="modal-content">
-      <h3>⚠️ Archive Customer</h3>
-      <p>Are you sure you want to archive <strong><?php echo htmlspecialchars($user['name']); ?></strong>?</p>
-      <p>This customer will be moved to the archived section and won't appear in the main list.</p>
-      <div class="modal-buttons">
-        <button class="btn-cancel" onclick="closeArchiveModal()">Cancel</button>
-        <button class="btn-confirm" onclick="archiveCustomer()">Archive</button>
+      
+      <div class="user-details-grid">
+        <div class="detail-item">
+          <label>Plate Number</label>
+          <div class="value">asd123</div>
+        </div>
+        
+        <div class="detail-item">
+          <label>Vehicle Type</label>
+          <div class="value">SUV</div>
+        </div>
+        
+        <div class="detail-item">
+          <label>Account Balance</label>
+          <div class="balance-value">₱0.00</div>
+        </div>
+        
+        <div class="detail-item">
+          <label>Contact Number</label>
+          <div class="value">N/A</div>
+        </div>
+      </div>
+      
+      <div class="reload-section">
+        <h3>💳 Reload Customer Balance</h3>
+        <form class="reload-form">
+          <div class="form-group">
+            <label>Amount to Reload</label>
+            <input type="number" placeholder="Enter amount (e.g., 100)" min="1">
+          </div>
+          <button type="submit" class="btn-reload">Reload Balance</button>
+        </form>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-archive">📦 Archive Customer</button>
+      </div>
+    </div>
+    
+    <div class="history-section">
+      <h3>Recent Parking History</h3>
+      <div class="empty-history">
+        <p>No parking history found for this customer.</p>
       </div>
     </div>
   </div>
-  
-  <script>
-  function toggleMobileMenu() {
-    document.querySelector('.admin-sidebar').classList.toggle('active');
-    document.querySelector('.overlay').classList.toggle('active');
-  }
-
-  function showArchiveModal() {
-    document.getElementById('archiveModal').classList.add('active');
-  }
-  
-  function closeArchiveModal() {
-    document.getElementById('archiveModal').classList.remove('active');
-  }
-  
-  function archiveCustomer() {
-    window.location.href = 'admin-view-user.php?id=<?php echo $userId; ?>&action=archive';
-  }
-
-  document.getElementById('archiveModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-      closeArchiveModal();
-    }
-  });
-</script>
+</main>
+  </div>
 </body>
-
 </html>
