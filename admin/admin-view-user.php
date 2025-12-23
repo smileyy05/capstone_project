@@ -1,11 +1,11 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['admin'])) {
     header("Location: admin-login.php");
     exit;
 }
 
-// Include PostgreSQL database connection
 require_once __DIR__ . '/../DB/DB_connection.php';
 
 $userId = $_GET['id'] ?? null;
@@ -15,27 +15,55 @@ if (!$userId) {
 }
 
 $success = '';
-$error = '';
+$error   = '';
 
-// Handle balance reload
+/* =========================
+   HANDLE BALANCE RELOAD (ADMIN)
+========================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reload_balance'])) {
-    $reloadAmount = $_POST['reload_amount'] ?? 0;
-    
-    if ($reloadAmount > 0) {
-        $result = db_prepare("UPDATE customers SET balance = balance + $1 WHERE id = $2", [$reloadAmount, $userId]);
-        if ($result) {
-            $success = "Balance reloaded successfully! Added ₱" . number_format($reloadAmount, 2);
+
+    $reloadAmount = $_POST['reload_amount'] ?? '';
+
+    // Validate: whole number only
+    if (!is_numeric($reloadAmount) || intval($reloadAmount) <= 0) {
+        $error = "Please enter a valid whole number greater than 0!";
+    } else {
+
+        $reloadAmount = intval($reloadAmount);
+
+        $result = db_prepare(
+            "UPDATE customers
+             SET balance = balance + ?
+             WHERE id = ?
+             RETURNING balance",
+            [$reloadAmount, $userId]
+        );
+
+        if ($result && db_num_rows($result) === 1) {
+            header("Location: admin-view-user.php?id=$userId&reload=success");
+            exit;
         } else {
             $error = "Failed to reload balance!";
         }
-    } else {
-        $error = "Please enter a valid amount!";
     }
 }
 
-// Handle archive action
+if (isset($_GET['reload']) && $_GET['reload'] === 'success') {
+    $success = "Balance reloaded successfully!";
+}
+
+/* =========================
+   HANDLE ARCHIVE
+========================= */
 if (isset($_GET['action']) && $_GET['action'] === 'archive') {
-    $result = db_prepare("UPDATE customers SET archived = true, archived_at = NOW() WHERE id = $1", [$userId]);
+
+    $result = db_prepare(
+        "UPDATE customers
+         SET archived = true, archived_at = NOW()
+         WHERE id = ?",
+        [$userId]
+    );
+
     if ($result) {
         header("Location: admin-vehicle-entry.php?archived=success");
         exit;
@@ -44,8 +72,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'archive') {
     }
 }
 
-// Fetch user details
-$result = db_prepare("SELECT * FROM customers WHERE id = $1", [$userId]);
+/* =========================
+   FETCH USER
+========================= */
+$result = db_prepare(
+    "SELECT * FROM customers WHERE id = ?",
+    [$userId]
+);
+
 $user = db_fetch_assoc($result);
 
 if (!$user) {
@@ -53,16 +87,23 @@ if (!$user) {
     exit;
 }
 
-// Fetch user's parking history
-$historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 ORDER BY entry_time DESC LIMIT 10", [$userId]);
+/* =========================
+   FETCH PARKING HISTORY
+========================= */
+$historyResult = db_prepare(
+    "SELECT * FROM parking_logs
+     WHERE customer_id = ?
+     ORDER BY entry_time DESC
+     LIMIT 10",
+    [$userId]
+);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View User Details</title>
-  <style>
+<meta charset="UTF-8">
+<title>View User Details</title>
+<style>
     * {
       margin: 0;
       padding: 0;
@@ -948,96 +989,137 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
   </style>
 </head>
 <body>
-  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-  <div class="overlay" onclick="toggleMobileMenu()"></div>
-  
-  <div class="admin-dashboard">
-    <aside class="admin-sidebar">
-      <h3>SOUTHWOODS<br>MALL</h3>
-      <nav>
-        <a href="admin-dashboard.php">🏠 Home</a>
-        <a href="admin-vehicle-entry.php" class="active">🚗 Vehicle Entry</a>
-        <a href="admin-vehicle-logs.php">📋 Vehicle Logs</a>
-        <a href="admin-reports.php">📊 Reports</a>
-        <a href="admin-archived.php">📦 Archived</a>
-        <a href="admin-account-settings.php">⚙️ Account Settings</a>
-        <a href="admin-logout.php">🔒 Log Out</a>
-      </nav>
-    </aside>
-    
-    <main class="admin-main">
-      <div class="admin-header">
-        <a href="admin-vehicle-entry.php" class="back-btn">← Back to List</a>
-        <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
-      </div>
-      
-      <div class="admin-content">
-        <?php if($success): ?>
-          <div class="msg-success"><?php echo $success; ?></div>
-        <?php endif; ?>
-        <?php if($error): ?>
-          <div class="msg-error"><?php echo $error; ?></div>
-        <?php endif; ?>
-        
-        <div class="user-details-container">
-          <div class="user-header">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?php echo urlencode($user['id'] . '-' . $user['plate']); ?>" 
-                 class="user-qr-code" 
-                 alt="User QR Code">
-            <div class="user-basic-info">
-              <h2><?php echo htmlspecialchars($user['name']); ?></h2>
-              <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-              <p><strong>User ID:</strong> #<?php echo htmlspecialchars($user['id']); ?></p>
-              <p><strong>Member Since:</strong> December 23, 2025</p>
-        </div>
-      </div>
-      
-      <div class="user-details-grid">
-        <div class="detail-item">
-          <label>Plate Number</label>
-          <div class="value">asd123</div>
-        </div>
-        
-        <div class="detail-item">
-          <label>Vehicle Type</label>
-          <div class="value">SUV</div>
-        </div>
-        
-        <div class="detail-item">
-          <label>Account Balance</label>
-          <div class="balance-value">₱0.00</div>
-        </div>
-        
-        <div class="detail-item">
-          <label>Contact Number</label>
-          <div class="value">N/A</div>
-        </div>
-      </div>
-      
-      <div class="reload-section">
-        <h3>💳 Reload Customer Balance</h3>
-        <form class="reload-form">
-          <div class="form-group">
-            <label>Amount to Reload</label>
-            <input type="number" placeholder="Enter amount (e.g., 100)" min="1">
-          </div>
-          <button type="submit" class="btn-reload">Reload Balance</button>
-        </form>
-      </div>
-      
-      <div class="action-buttons">
-        <button class="btn-archive">📦 Archive Customer</button>
-      </div>
-    </div>
-    
-    <div class="history-section">
-      <h3>Recent Parking History</h3>
-      <div class="empty-history">
-        <p>No parking history found for this customer.</p>
-      </div>
-    </div>
-  </div>
+
+<div class="admin-dashboard">
+<main class="admin-main">
+
+<div class="admin-content">
+
+<?php if ($success): ?>
+<div class="msg-success"><?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
+
+<?php if ($error): ?>
+<div class="msg-error"><?= htmlspecialchars($error) ?></div>
+<?php endif; ?>
+
+<div class="user-details-container">
+
+<div class="user-header">
+<img
+src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode($user['id'].'-'.$user['plate']) ?>"
+class="user-qr-code"
+alt="User QR Code">
+
+<div class="user-basic-info">
+<h2><?= htmlspecialchars($user['name']) ?></h2>
+<p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
+<p><strong>User ID:</strong> #<?= $user['id'] ?></p>
+<p><strong>Member Since:</strong> <?= date('F d, Y', strtotime($user['created_at'])) ?></p>
+</div>
+</div>
+
+<div class="user-details-grid">
+
+<div class="detail-item">
+<label>Plate Number</label>
+<div class="value"><?= htmlspecialchars($user['plate']) ?></div>
+</div>
+
+<div class="detail-item">
+<label>Vehicle Type</label>
+<div class="value"><?= htmlspecialchars($user['vehicle_type']) ?></div>
+</div>
+
+<div class="detail-item">
+<label>Account Balance</label>
+<div class="balance-value">
+₱<?= number_format($user['balance'], 2) ?>
+</div>
+</div>
+
+<div class="detail-item">
+<label>Contact Number</label>
+<div class="value"><?= htmlspecialchars($user['contact'] ?? 'N/A') ?></div>
+</div>
+
+</div>
+
+<!-- =========================
+     RELOAD FORM (ADMIN)
+========================= -->
+<div class="reload-section">
+<h3>💳 Reload Customer Balance</h3>
+
+<form method="POST" class="reload-form">
+<div class="form-group">
+<label>Amount to Reload</label>
+<input
+type="number"
+name="reload_amount"
+min="1"
+step="1"
+required
+>
+</div>
+
+<button
+type="submit"
+name="reload_balance"
+class="btn-reload"
+>
+Reload Balance
+</button>
+</form>
+</div>
+
+<!-- =========================
+     ARCHIVE BUTTON
+========================= -->
+<div class="action-buttons">
+<a
+href="admin-view-user.php?id=<?= $userId ?>&action=archive"
+class="btn-archive"
+onclick="return confirm('Archive this customer?')"
+>
+📦 Archive Customer
+</a>
+</div>
+
+</div>
+
+<!-- =========================
+     PARKING HISTORY
+========================= -->
+<div class="history-section">
+<h3>Recent Parking History</h3>
+
+<?php if (db_num_rows($historyResult) > 0): ?>
+<table>
+<tr>
+<th>Plate</th>
+<th>Entry</th>
+<th>Exit</th>
+<th>Fee</th>
+</tr>
+
+<?php while ($row = db_fetch_assoc($historyResult)): ?>
+<tr>
+<td><?= htmlspecialchars($row['plate']) ?></td>
+<td><?= htmlspecialchars($row['entry_time']) ?></td>
+<td><?= htmlspecialchars($row['exit_time'] ?? '-') ?></td>
+<td>₱<?= number_format($row['fee'] ?? 0, 2) ?></td>
+</tr>
+<?php endwhile; ?>
+</table>
+<?php else: ?>
+<p>No parking history found for this customer.</p>
+<?php endif; ?>
+
+</div>
+
 </main>
-  </div>
+</div>
+
 </body>
 </html>
