@@ -1096,26 +1096,29 @@ $historyResult = db_prepare("SELECT * FROM parking_logs WHERE customer_id = $1 O
   </div>
   
   <script>
-    function showArchiveModal() {
-      document.getElementById('archiveModal').classList.add('active');
+  function toggleMobileMenu() {
+    document.querySelector('.admin-sidebar').classList.toggle('active');
+    document.querySelector('.overlay').classList.toggle('active');
+  }
+
+  function showArchiveModal() {
+    document.getElementById('archiveModal').classList.add('active');
+  }
+  
+  function closeArchiveModal() {
+    document.getElementById('archiveModal').classList.remove('active');
+  }
+  
+  function archiveCustomer() {
+    window.location.href = 'admin-view-user.php?id=<?php echo $userId; ?>&action=archive';
+  }
+
+  document.getElementById('archiveModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeArchiveModal();
     }
-    
-    function closeArchiveModal() {
-      document.getElementById('archiveModal').classList.remove('active');
-    }
-    
-    function archiveCustomer() {
-      window.location.href = 'admin-view-user.php?id=<?php echo $userId; ?>&action=archive';
-    }
-    
-    // Close modal when clicking outside
-    document.getElementById('archiveModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeArchiveModal();
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 
 </html>
-
