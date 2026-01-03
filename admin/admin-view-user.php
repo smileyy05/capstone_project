@@ -959,7 +959,7 @@ $historyResult = db_prepare(
         width: 100%;
       }
     }
-    
+    a
     /* Landscape Mobile */
     @media (max-height: 500px) and (orientation: landscape) {
       .admin-sidebar {
@@ -1032,20 +1032,10 @@ alt="User QR Code">
 </div>
 
 <div class="detail-item">
-<label>Vehicle Type</label>
-<div class="value"><?= htmlspecialchars($user['vehicle_type']) ?></div>
-</div>
-
-<div class="detail-item">
 <label>Account Balance</label>
 <div class="balance-value">
 ₱<?= number_format($user['balance'], 2) ?>
 </div>
-</div>
-
-<div class="detail-item">
-<label>Contact Number</label>
-<div class="value"><?= htmlspecialchars($user['contact'] ?? 'N/A') ?></div>
 </div>
 
 </div>
@@ -1125,6 +1115,42 @@ onclick="return confirm('Archive this customer?')"
 
 </main>
 </div>
-
+    <div id="archiveModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Archive Customer</h3>
+        <p>Are you sure you want to archive this customer?</p>
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="confirmArchive()">Yes</button>
+            <button class="btn-cancel" onclick="closeModal()">No</button>
+        </div>
+    </div>
+</div>
 </body>
+    <script>
+let currentUserId = null;
+
+function showArchiveModal(event, userId) {
+    event.preventDefault();
+    currentUserId = userId;
+    document.getElementById('archiveModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('archiveModal').classList.remove('active');
+    currentUserId = null;
+}
+
+function confirmArchive() {
+    if (currentUserId) {
+        window.location.href = `admin-view-user.php?id=${currentUserId}&action=archive`;
+    }
+}
+
+document.getElementById('archiveModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
 </html>
+
