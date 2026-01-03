@@ -382,10 +382,11 @@ unset($_SESSION['login_error']);
           
           <button type="submit" class="login-btn">Login</button>
           <a href="customer-register.php" class="register-link">Don't have an account? Register</a>
-          <a href="../website/index.php" class="back-link">Back to Main</a>
+          <a href="/index.php" class="back-link">Back to Main</a>
         </form>
       </div>
     </div>
   </div>
 </body>
 </html>
+
