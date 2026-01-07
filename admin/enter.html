@@ -613,7 +613,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         customer_id: currentUser.id,
-                        qr_code: currentUser.qr_code 
+                        qr_code: qrData  // Send the original scanned QR code
                     })
                 });
             })
