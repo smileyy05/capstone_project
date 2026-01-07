@@ -19,7 +19,7 @@ if (!$customer_id || !$qr_code) {
 // Get customer details with cleaned QR code matching
 $customer_sql = "SELECT id, name, email, plate, vehicle, balance, qr_code 
                  FROM customers 
-                 WHERE id = ? AND archived = 0
+                 WHERE id = $1 AND archived = 0
                  LIMIT 1";
 $customer_result = db_prepare($customer_sql, [$customer_id]);
 
@@ -41,7 +41,7 @@ if ($customer['balance'] < 30) {
 
 // Prevent duplicate active entry
 $check_sql = "SELECT id, entry_time FROM parking_logs 
-              WHERE customer_id = ? AND exit_time IS NULL
+              WHERE customer_id = $1 AND exit_time IS NULL
               ORDER BY entry_time DESC 
               LIMIT 1";
 $check_result = db_prepare($check_sql, [$customer_id]);
@@ -80,7 +80,8 @@ try {
     // Insert parking log and get ID
     $insert_sql = "INSERT INTO parking_logs
                    (customer_id, customer_name, plate, vehicle, entry_time, fee)
-                   VALUES (?, ?, ?, ?, NOW(), 0.00)";
+                   VALUES ($1, $2, $3, $4, NOW(), 0.00)
+                   RETURNING id";
     
     $log_id = db_insert_id($insert_sql, [
         $customer_id,
@@ -107,6 +108,30 @@ try {
     if (!db_commit()) {
         throw new Exception("Failed to commit transaction");
     }
+    
+    // ========== INSERT ARDUINO COMMAND (AFTER SUCCESSFUL ENTRY) ==========
+    try {
+        $arduino_sql = "INSERT INTO arduino_commands 
+                        (customer_id, customer_name, qr_code, action, station) 
+                        VALUES ($1, $2, $3, $4, $5)";
+        
+        $arduino_result = db_prepare($arduino_sql, [
+            $customer_id,
+            $customer['name'],
+            $qr_code,
+            'OPEN',
+            'entry'
+        ]);
+        
+        if (!$arduino_result) {
+            error_log("Arduino command insert failed: " . db_error());
+            // Don't fail the entry if Arduino command fails
+        }
+    } catch (Exception $e) {
+        error_log("Arduino command error: " . $e->getMessage());
+        // Continue even if Arduino command fails
+    }
+    // ========== END ARDUINO COMMAND ==========
     
     echo json_encode([
         "success" => true,
