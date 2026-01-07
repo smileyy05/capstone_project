@@ -34,7 +34,7 @@ if (!db_begin_transaction()) {
 
 try {
     // Get parking log details
-    $log_sql = "SELECT entry_time, customer_id FROM parking_logs WHERE id = ? AND status = 'entered' LIMIT 1";
+    $log_sql = "SELECT entry_time, customer_id FROM parking_logs WHERE id = $1 AND status = 'entered' LIMIT 1";
     $log_result = db_prepare($log_sql, [$log_id]);
     
     if (!$log_result || db_num_rows($log_result) === 0) {
@@ -47,6 +47,18 @@ try {
     if ($log['customer_id'] != $customer_id) {
         throw new Exception('Customer ID mismatch');
     }
+    
+    // Get customer name and QR code for Arduino command
+    $customer_sql = "SELECT name, qr_code FROM customers WHERE id = $1 LIMIT 1";
+    $customer_result = db_prepare($customer_sql, [$customer_id]);
+    
+    if (!$customer_result || db_num_rows($customer_result) === 0) {
+        throw new Exception('Customer not found');
+    }
+    
+    $customer_data_arduino = db_fetch_assoc($customer_result);
+    $customer_name = $customer_data_arduino['name'];
+    $qr_code = $customer_data_arduino['qr_code'];
     
     // Calculate fee with Manila timezone
     date_default_timezone_set('Asia/Manila');
@@ -82,7 +94,7 @@ try {
     }
     
     // Get customer balance
-    $balance_sql = "SELECT balance FROM customers WHERE id = ? LIMIT 1";
+    $balance_sql = "SELECT balance FROM customers WHERE id = $1 LIMIT 1";
     $balance_result = db_prepare($balance_sql, [$customer_id]);
     
     if (!$balance_result || db_num_rows($balance_result) === 0) {
@@ -97,8 +109,8 @@ try {
     
     // Update parking log with exit time and fee
     $update_log_sql = "UPDATE parking_logs 
-                       SET exit_time = ?, status = 'exited', parking_fee = ? 
-                       WHERE id = ?";
+                       SET exit_time = $1, status = 'exited', parking_fee = $2 
+                       WHERE id = $3";
     $exit_time_str = $exit_time->format('Y-m-d H:i:s');
     $update_log_result = db_prepare($update_log_sql, [$exit_time_str, $fee, $log_id]);
     
@@ -108,7 +120,7 @@ try {
     
     // Deduct fee from customer balance
     $new_balance = $customer_data['balance'] - $fee;
-    $update_balance_sql = "UPDATE customers SET balance = ? WHERE id = ?";
+    $update_balance_sql = "UPDATE customers SET balance = $1 WHERE id = $2";
     $update_balance_result = db_prepare($update_balance_sql, [$new_balance, $customer_id]);
     
     if (!$update_balance_result) {
@@ -128,6 +140,30 @@ try {
     if (!db_commit()) {
         throw new Exception('Failed to commit transaction');
     }
+    
+    // ========== INSERT ARDUINO COMMAND (AFTER SUCCESSFUL EXIT) ==========
+    try {
+        $arduino_sql = "INSERT INTO arduino_commands 
+                        (customer_id, customer_name, qr_code, action, station) 
+                        VALUES ($1, $2, $3, $4, $5)";
+        
+        $arduino_result = db_prepare($arduino_sql, [
+            $customer_id,
+            $customer_name,
+            $qr_code,
+            'OPEN',
+            'exit'
+        ]);
+        
+        if (!$arduino_result) {
+            error_log("Arduino exit command insert failed: " . db_error());
+            // Don't fail the exit if Arduino command fails
+        }
+    } catch (Exception $e) {
+        error_log("Arduino exit command error: " . $e->getMessage());
+        // Continue even if Arduino command fails
+    }
+    // ========== END ARDUINO COMMAND ==========
     
     echo json_encode([
         'success' => true,
