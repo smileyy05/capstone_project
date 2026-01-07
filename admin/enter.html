@@ -40,8 +40,7 @@
         }
 
         .landing-page {
-            background: linear-gradient(135deg, rgba(46, 87, 185, 0.85), rgba(30, 60, 140, 0.85)),
-                        url('southwoods_bg.jpg') center/cover no-repeat fixed;
+            background: linear-gradient(135deg, rgba(46, 87, 185, 0.85), rgba(30, 60, 140, 0.85));
             width: 100%;
             height: 100%;
             min-height: 100vh;
@@ -71,6 +70,14 @@
             image-rendering: crisp-edges;
             display: block;
             margin: 0 auto;
+        }
+
+        .logo-fallback {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
         }
 
         .landing-content {
@@ -322,7 +329,8 @@
     <div class="page active" id="landing-page">
         <div class="landing-page">
             <div class="header">
-                <img src="Without-Background.png" alt="Southwoods Mall" class="logo">
+                <img src="Without-Background.png" alt="Southwoods Mall" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="logo-fallback" style="display: none;">SOUTHWOODS MALL</div>
             </div>
             <div class="landing-content">
                 <h1 class="scan-title">SCAN HERE</h1>
@@ -347,7 +355,8 @@
     <div class="page" id="success-page">
         <div class="success-page">
             <div class="header">
-                <img src="Without-Background.png" alt="Southwoods Mall" class="logo" style="max-width: 200px;">
+                <img src="Without-Background.png" alt="Southwoods Mall" class="logo" style="max-width: 200px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="logo-fallback" style="display: none;">SOUTHWOODS MALL</div>
             </div>
             <div class="success-card">
                 <div class="checkmark">✓</div>
@@ -370,7 +379,7 @@
     </div>
 
     <script>
-        // CRITICAL: Set this to '' (empty string) since your PHP files are in the root directory
+        // Set API base - empty string for root directory PHP files
         const API_BASE = '';
         
         let currentUser = null;
@@ -467,11 +476,11 @@
             console.log('🔍 Processing scan:', qrData);
             updateScannerStatus('Scanning...', true);
 
+            // Hide any previous errors
+            hideError();
+
             // Process the entry
             verifyAndEnter(qrData);
-
-            // Start cooldown period (5 seconds)
-            startCooldown();
         }
 
         function startCooldown() {
@@ -530,15 +539,26 @@
             if (errorDiv) {
                 errorDiv.textContent = message;
                 errorDiv.classList.add('active');
+                // Auto-hide error after 5 seconds
                 setTimeout(() => {
-                    errorDiv.classList.remove('active');
+                    hideError();
                 }, 5000);
             }
             console.error('❌ Error:', message);
         }
 
+        function hideError() {
+            const errorDiv = document.getElementById('errorMessage');
+            if (errorDiv) {
+                errorDiv.classList.remove('active');
+            }
+        }
+
         function verifyAndEnter(qrData) {
             showLoading(true);
+            
+            console.log('🔍 Attempting to verify QR Code:', qrData);
+            console.log('🔗 API URL:', API_BASE + 'verify_qr.php');
             
             // Step 1: Verify QR Code
             fetch(API_BASE + 'verify_qr.php', {
@@ -547,18 +567,41 @@
                 body: JSON.stringify({ qr_code: qrData })
             })
             .then(response => {
+                console.log('📡 Response status:', response.status);
+                console.log('📡 Response headers:', [...response.headers.entries()]);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return response.json();
+                return response.text(); // Get as text first to see raw response
+            })
+            .then(text => {
+                console.log('📄 Raw response:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ JSON Parse Error:', e);
+                    throw new Error('Invalid JSON response: ' + text);
+                }
             })
             .then(data => {
                 console.log('📥 Verify response:', data);
+                console.log('📥 Response structure:', JSON.stringify(data, null, 2));
+                console.log('📥 Success status:', data.success);
+                console.log('📥 Message:', data.message);
                 
                 if (!data.success) {
                     showLoading(false);
-                    resetCooldown();
+                    
+                    // Enhanced error display with debug info
+                    let errorMsg = data.message || 'Verification failed';
+                    if (data.debug) {
+                        console.log('🔍 Debug info:', data.debug);
+                        errorMsg += '\n\nDebug: QR searched = "' + data.debug.qr_searched + '"';
+                        errorMsg += '\nLength = ' + data.debug.qr_length;
+                    }
+                    
                     showError(data.message || 'Verification failed');
+                    startCooldown(); // Start cooldown even on error
                     return Promise.reject('Verification failed');
                 }
 
@@ -587,8 +630,8 @@
                 
                 if (!data.success) {
                     showLoading(false);
-                    resetCooldown();
                     showError(data.message || 'Failed to record entry');
+                    startCooldown(); // Start cooldown even on error
                     return Promise.reject('Entry recording failed');
                 }
 
@@ -606,6 +649,10 @@
                 if (!slotsData) return;
                 console.log('📥 Slots response:', slotsData);
                 showLoading(false);
+                
+                // Reset cooldown since we're showing success page
+                resetCooldown();
+                
                 showSuccessPage(
                     currentUser.name,
                     currentUser.balance,
@@ -615,8 +662,16 @@
             .catch(error => {
                 console.error('❌ Error:', error);
                 showLoading(false);
-                resetCooldown();
-                if (error.message && error.message !== 'Verification failed' && error.message !== 'Entry recording failed') {
+                
+                // Only start cooldown if it wasn't already started
+                if (!scanCooldownTimer && isScanning) {
+                    startCooldown();
+                }
+                
+                // Show connection error for unexpected errors
+                if (error.message && 
+                    error.message !== 'Verification failed' && 
+                    error.message !== 'Entry recording failed') {
                     showError('Connection error. Please check your internet connection and try again.');
                 }
             });
@@ -645,7 +700,7 @@
                     countdownInterval = null;
                     showPage('landing');
                     currentUser = null;
-                    // Don't reset cooldown here - let it finish naturally
+                    hideError(); // Clear any errors when returning to scan page
                 }
             }, 1000);
         }
