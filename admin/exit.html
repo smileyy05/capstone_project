@@ -64,13 +64,18 @@
             z-index: 10;
         }
 
-        .logo {
-            max-width: 300px;
-            height: auto;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            display: block;
-            margin: 0 auto;
+        .logo-text {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            color: white;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+            letter-spacing: 3px;
+            text-align: center;
+        }
+
+        .thankyou-page .header .logo-text {
+            color: #2e57b9;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         }
 
         .landing-content {
@@ -303,8 +308,9 @@
         }
 
         @media (max-width: 480px) {
-            .logo {
-                max-width: 220px;
+            .logo-text {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
             }
 
             .scan-title {
@@ -335,7 +341,7 @@
     <div class="page active" id="landing-page">
         <div class="landing-page">
             <div class="header">
-                <img src="Without-Background.png" alt="Southwoods Mall" class="logo">
+                <h1 class="logo-text">SOUTHWOODS MALL</h1>
             </div>
             <div class="landing-content">
                 <h1 class="scan-title">SCAN HERE</h1>
@@ -360,7 +366,7 @@
     <div class="page" id="thankyou-page">
         <div class="thankyou-page">
             <div class="header">
-                <img src="Without-Background.png" alt="Southwoods Mall" class="logo" style="max-width: 200px;">
+                <h1 class="logo-text">SOUTHWOODS MALL</h1>
             </div>
             <div class="thankyou-card">
                 <div class="checkmark">✓</div>
