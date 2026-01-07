@@ -11,6 +11,7 @@ header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
@@ -44,77 +45,145 @@ try {
         send_json(['success' => false, 'message' => 'QR code is required']);
     }
     
-    // CRITICAL: Try to extract customer ID from different QR formats
-    $customer_id_from_qr = null;
-    
-    // Format 1: CNLINE_QR:CUSTOMER_ID:19|PLATE:xxx
-    if (preg_match('/CUSTOMER_ID:(\d+)/', $qr_code, $matches)) {
-        $customer_id_from_qr = $matches[1];
-        debug_log('Extracted customer ID from CNLINE format', $customer_id_from_qr);
-    }
-    
-    // Try multiple search strategies
+    // CRITICAL FIX: Use 0 instead of false for smallint column
     $customer = null;
     
     // Strategy 1: Exact QR match
-    $sql = "SELECT * FROM customers WHERE qr_code = $1 AND (archived = false OR archived = 0) LIMIT 1";
+    $sql = "SELECT id, name, email, plate, vehicle, qr_code, balance, created_at, archived
+            FROM customers 
+            WHERE qr_code = $1 AND archived = 0
+            LIMIT 1";
+    
     $result = db_prepare($sql, [$qr_code]);
+    
     if ($result && db_num_rows($result) > 0) {
         $customer = db_fetch_assoc($result);
         debug_log('Found via exact match');
     }
     
-    // Strategy 2: Search by extracted customer ID
-    if (!$customer && $customer_id_from_qr) {
-        $sql = "SELECT * FROM customers WHERE id = $1 AND (archived = false OR archived = 0) LIMIT 1";
+    // Strategy 2: Trimmed match
+    if (!$customer) {
+        $sql = "SELECT id, name, email, plate, vehicle, qr_code, balance, created_at, archived
+                FROM customers 
+                WHERE TRIM(qr_code) = $1 AND archived = 0
+                LIMIT 1";
+        
+        $result = db_prepare($sql, [$qr_code]);
+        
+        if ($result && db_num_rows($result) > 0) {
+            $customer = db_fetch_assoc($result);
+            debug_log('Found via trimmed match');
+        }
+    }
+    
+    // Strategy 3: Case-insensitive match
+    if (!$customer) {
+        $sql = "SELECT id, name, email, plate, vehicle, qr_code, balance, created_at, archived
+                FROM customers 
+                WHERE LOWER(TRIM(qr_code)) = LOWER($1) AND archived = 0
+                LIMIT 1";
+        
+        $result = db_prepare($sql, [$qr_code]);
+        
+        if ($result && db_num_rows($result) > 0) {
+            $customer = db_fetch_assoc($result);
+            debug_log('Found via case-insensitive match');
+        }
+    }
+    
+    // Strategy 4: Extract customer ID from QR code formats like "CNLINE_QR:CUSTOMER_ID:19|PLATE:xxx"
+    if (!$customer && preg_match('/CUSTOMER_ID:(\d+)/', $qr_code, $matches)) {
+        $customer_id_from_qr = $matches[1];
+        debug_log('Extracted customer ID from QR', $customer_id_from_qr);
+        
+        $sql = "SELECT id, name, email, plate, vehicle, qr_code, balance, created_at, archived
+                FROM customers 
+                WHERE id = $1 AND archived = 0
+                LIMIT 1";
+        
         $result = db_prepare($sql, [$customer_id_from_qr]);
+        
         if ($result && db_num_rows($result) > 0) {
             $customer = db_fetch_assoc($result);
-            debug_log('Found via customer ID extraction', $customer_id_from_qr);
+            debug_log('Found via customer ID extraction');
         }
     }
     
-    // Strategy 3: Partial QR match (if QR contains part of stored QR)
+    // Strategy 5: Check if customer exists but is archived
     if (!$customer) {
-        $sql = "SELECT * FROM customers WHERE qr_code LIKE $1 AND (archived = false OR archived = 0) LIMIT 1";
-        $result = db_prepare($sql, ['%' . $qr_code . '%']);
+        $sql = "SELECT id, name, email, qr_code, archived
+                FROM customers 
+                WHERE LOWER(TRIM(qr_code)) = LOWER($1)
+                LIMIT 1";
+        
+        $result = db_prepare($sql, [$qr_code]);
+        
         if ($result && db_num_rows($result) > 0) {
-            $customer = db_fetch_assoc($result);
-            debug_log('Found via partial match');
+            $archived_customer = db_fetch_assoc($result);
+            debug_log('Found archived customer', $archived_customer);
+            
+            send_json([
+                'success' => false,
+                'message' => 'Your account has been archived. Please contact the admin desk to reactivate your account.'
+            ]);
         }
     }
     
+    // No customer found
     if (!$customer) {
-        debug_log('Customer not found');
+        debug_log('Customer not found with QR code', $qr_code);
+        
         send_json([
             'success' => false,
             'message' => 'Customer not registered in the system. Please register first at the admin desk.'
         ]);
     }
     
+    // Customer found - validate
+    $customer_id = $customer['id'];
+    debug_log('Customer found', ['id' => $customer_id, 'name' => $customer['name']]);
+    
     // Check balance
     if ($customer['balance'] < 30) {
+        debug_log('Insufficient balance', ['balance' => $customer['balance']]);
         send_json([
             'success' => false,
-            'message' => 'Insufficient balance. Your balance is ₱' . number_format($customer['balance'], 2) . '. Minimum required: ₱30.00.'
+            'message' => 'Insufficient balance. Your balance is ₱' . number_format($customer['balance'], 2) . '. Minimum required: ₱30.00. Please reload your account.'
         ]);
     }
     
-    // Check if already inside
-    $check_sql = "SELECT id, entry_time FROM parking_logs WHERE customer_id = $1 AND exit_time IS NULL ORDER BY entry_time DESC LIMIT 1";
-    $check_result = db_prepare($check_sql, [$customer['id']]);
+    // Check for active parking entry
+    $check_sql = "SELECT id, entry_time 
+                  FROM parking_logs 
+                  WHERE customer_id = $1 AND exit_time IS NULL
+                  ORDER BY entry_time DESC 
+                  LIMIT 1";
     
-    if ($check_result && db_num_rows($check_result) > 0) {
+    $check_result = db_prepare($check_sql, [$customer_id]);
+    
+    if (!$check_result) {
+        debug_log('Failed to check active entries', db_error());
+        send_json([
+            'success' => false,
+            'message' => 'Database error while checking parking status'
+        ]);
+    }
+    
+    if (db_num_rows($check_result) > 0) {
         $active_entry = db_fetch_assoc($check_result);
+        debug_log('Customer already has active entry', $active_entry);
+        
         send_json([
             'success' => false,
-            'message' => 'You have already entered at ' . date('g:i A', strtotime($active_entry['entry_time'])) . '. Please exit first.',
-            'already_inside' => true
+            'message' => 'You have already entered the parking lot at ' . date('g:i A', strtotime($active_entry['entry_time'])) . '. Please exit first before entering again.',
+            'already_inside' => true,
+            'entry_time' => $active_entry['entry_time']
         ]);
     }
     
-    // Success
-    debug_log('Verification successful', $customer['id']);
+    // All checks passed - return success
+    debug_log('Verification successful', ['customer_id' => $customer_id]);
+    
     send_json([
         'success' => true,
         'message' => 'Customer verified successfully',
@@ -131,7 +200,15 @@ try {
     ]);
     
 } catch (Exception $e) {
-    debug_log('Exception', $e->getMessage());
-    send_json(['success' => false, 'message' => 'An error occurred']);
+    debug_log('Exception caught', [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
+    
+    send_json([
+        'success' => false,
+        'message' => 'An error occurred while verifying the QR code. Please try again.'
+    ]);
 }
 ?>
