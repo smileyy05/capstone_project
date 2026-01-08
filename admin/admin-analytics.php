@@ -10,31 +10,56 @@ if (!isset($_SESSION['admin'])) {
 // Include database connection
 require_once __DIR__ . '/../DB/DB_connection.php';
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Fetch analytics data
 $current_month = date('Y-m');
 $previous_month = date('Y-m', strtotime('-1 month'));
 
-// Get current month's revenue
+// Debug: Check total records
+$debug_sql = "SELECT COUNT(*) as total, 
+              COUNT(CASE WHEN exit_time IS NOT NULL THEN 1 END) as with_exit,
+              COUNT(CASE WHEN status = 'exited' THEN 1 END) as exited_status
+              FROM parking_logs";
+$debug_result = pg_query($debug_sql);
+$debug_data = pg_fetch_assoc($debug_result);
+error_log("Total records: " . print_r($debug_data, true));
+
+// Get current month's revenue - Modified query to be more flexible
 $current_month_sql = "SELECT COALESCE(SUM(parking_fee), 0) as total 
                       FROM parking_logs 
-                      WHERE status = 'exited' 
-                      AND exit_time IS NOT NULL
-                      AND TO_CHAR(exit_time, 'YYYY-MM') = ?";
+                      WHERE exit_time IS NOT NULL
+                      AND parking_fee > 0
+                      AND TO_CHAR(exit_time, 'YYYY-MM') = $1";
 
-$current_month_result = db_prepare($current_month_sql, [$current_month]);
-$current_month_data = db_fetch_assoc($current_month_result);
-$current_month_revenue = floatval($current_month_data['total'] ?? 0);
+try {
+    $current_month_result = db_prepare($current_month_sql, [$current_month]);
+    $current_month_data = db_fetch_assoc($current_month_result);
+    $current_month_revenue = floatval($current_month_data['total'] ?? 0);
+    
+    error_log("Current month revenue: $current_month_revenue");
+} catch (Exception $e) {
+    error_log("Error fetching current month revenue: " . $e->getMessage());
+    $current_month_revenue = 0;
+}
 
 // Get previous month's revenue
 $previous_month_sql = "SELECT COALESCE(SUM(parking_fee), 0) as total 
                        FROM parking_logs 
-                       WHERE status = 'exited' 
-                       AND exit_time IS NOT NULL
-                       AND TO_CHAR(exit_time, 'YYYY-MM') = ?";
+                       WHERE exit_time IS NOT NULL
+                       AND parking_fee > 0
+                       AND TO_CHAR(exit_time, 'YYYY-MM') = $1";
 
-$previous_month_result = db_prepare($previous_month_sql, [$previous_month]);
-$previous_month_data = db_fetch_assoc($previous_month_result);
-$previous_month_revenue = floatval($previous_month_data['total'] ?? 0);
+try {
+    $previous_month_result = db_prepare($previous_month_sql, [$previous_month]);
+    $previous_month_data = db_fetch_assoc($previous_month_result);
+    $previous_month_revenue = floatval($previous_month_data['total'] ?? 0);
+} catch (Exception $e) {
+    error_log("Error fetching previous month revenue: " . $e->getMessage());
+    $previous_month_revenue = 0;
+}
 
 // Calculate growth rate
 $growth_rate = 0;
@@ -47,13 +72,18 @@ if ($previous_month_revenue > 0) {
 // Get total transactions this month
 $transactions_sql = "SELECT COUNT(*) as count 
                     FROM parking_logs 
-                    WHERE status = 'exited' 
-                    AND exit_time IS NOT NULL
-                    AND TO_CHAR(exit_time, 'YYYY-MM') = ?";
+                    WHERE exit_time IS NOT NULL
+                    AND parking_fee > 0
+                    AND TO_CHAR(exit_time, 'YYYY-MM') = $1";
 
-$transactions_result = db_prepare($transactions_sql, [$current_month]);
-$transactions_data = db_fetch_assoc($transactions_result);
-$total_transactions = intval($transactions_data['count'] ?? 0);
+try {
+    $transactions_result = db_prepare($transactions_sql, [$current_month]);
+    $transactions_data = db_fetch_assoc($transactions_result);
+    $total_transactions = intval($transactions_data['count'] ?? 0);
+} catch (Exception $e) {
+    error_log("Error fetching transactions: " . $e->getMessage());
+    $total_transactions = 0;
+}
 
 // Get average daily revenue this month
 $days_in_month = date('t');
@@ -63,16 +93,21 @@ $average_daily_revenue = $days_in_month > 0 ? $current_month_revenue / $days_in_
 $peak_revenue_sql = "SELECT EXTRACT(HOUR FROM exit_time) as hour, 
                            COALESCE(SUM(parking_fee), 0) as revenue 
                     FROM parking_logs 
-                    WHERE status = 'exited' 
-                    AND exit_time IS NOT NULL
-                    AND TO_CHAR(exit_time, 'YYYY-MM') = ?
+                    WHERE exit_time IS NOT NULL
+                    AND parking_fee > 0
+                    AND TO_CHAR(exit_time, 'YYYY-MM') = $1
                     GROUP BY EXTRACT(HOUR FROM exit_time) 
                     ORDER BY revenue DESC 
                     LIMIT 1";
 
-$peak_revenue_result = db_prepare($peak_revenue_sql, [$current_month]);
-$peak_revenue_data = db_fetch_assoc($peak_revenue_result);
-$peak_revenue = floatval($peak_revenue_data['revenue'] ?? 0);
+try {
+    $peak_revenue_result = db_prepare($peak_revenue_sql, [$current_month]);
+    $peak_revenue_data = db_fetch_assoc($peak_revenue_result);
+    $peak_revenue = floatval($peak_revenue_data['revenue'] ?? 0);
+} catch (Exception $e) {
+    error_log("Error fetching peak revenue: " . $e->getMessage());
+    $peak_revenue = 0;
+}
 
 // Get daily revenue data for chart
 $daily_revenue_sql = "SELECT 
@@ -80,14 +115,19 @@ $daily_revenue_sql = "SELECT
                         EXTRACT(DAY FROM exit_time)::INTEGER as day,
                         COALESCE(SUM(parking_fee), 0) as revenue
                       FROM parking_logs
-                      WHERE status = 'exited'
-                      AND exit_time IS NOT NULL
-                      AND TO_CHAR(exit_time, 'YYYY-MM') = ?
+                      WHERE exit_time IS NOT NULL
+                      AND parking_fee > 0
+                      AND TO_CHAR(exit_time, 'YYYY-MM') = $1
                       GROUP BY TO_CHAR(exit_time, 'Mon DD'), EXTRACT(DAY FROM exit_time)
                       ORDER BY day";
 
-$daily_revenue_result = db_prepare($daily_revenue_sql, [$current_month]);
-$daily_revenue_data = db_fetch_all($daily_revenue_result);
+try {
+    $daily_revenue_result = db_prepare($daily_revenue_sql, [$current_month]);
+    $daily_revenue_data = db_fetch_all($daily_revenue_result);
+} catch (Exception $e) {
+    error_log("Error fetching daily revenue: " . $e->getMessage());
+    $daily_revenue_data = [];
+}
 
 // Prepare chart data
 $chart_labels = [];
@@ -98,6 +138,11 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
         $chart_labels[] = $row['date_label'];
         $chart_values[] = floatval($row['revenue']);
     }
+}
+
+// If no data, add debug info
+if (empty($chart_labels)) {
+    error_log("No chart data found for month: $current_month");
 }
 ?>
 <!DOCTYPE html>
@@ -843,6 +888,16 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
             </button>
         </div>
 
+         <?php if ($current_month_revenue == 0 && $total_transactions == 0): ?>
+        <div class="debug-info">
+            <strong>⚠️ Debug Info:</strong> No revenue data found for <?php echo $current_month; ?>. 
+            Please check: (1) Records have exit_time filled, (2) parking_fee > 0, (3) Date format matches YYYY-MM.
+            <br>Total DB records: <?php echo $debug_data['total'] ?? 'unknown'; ?> | 
+            With exit time: <?php echo $debug_data['with_exit'] ?? 'unknown'; ?> | 
+            Status 'exited': <?php echo $debug_data['exited_status'] ?? 'unknown'; ?>
+        </div>
+        <?php endif; ?>
+
         <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -1121,3 +1176,4 @@ if ($daily_revenue_data && is_array($daily_revenue_data)) {
     </script>
 </body>
 </html>
+
