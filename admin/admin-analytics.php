@@ -23,9 +23,14 @@ $debug_sql = "SELECT COUNT(*) as total,
               COUNT(CASE WHEN exit_time IS NOT NULL THEN 1 END) as with_exit,
               COUNT(CASE WHEN status = 'exited' THEN 1 END) as exited_status
               FROM parking_logs";
-$debug_result = pg_query($debug_sql);
-$debug_data = pg_fetch_assoc($debug_result);
-error_log("Total records: " . print_r($debug_data, true));
+try {
+    $debug_result = db_query($debug_sql);
+    $debug_data = db_fetch_assoc($debug_result);
+    error_log("Total records: " . print_r($debug_data, true));
+} catch (Exception $e) {
+    error_log("Debug query error: " . $e->getMessage());
+    $debug_data = ['total' => 'unknown', 'with_exit' => 'unknown', 'exited_status' => 'unknown'];
+}
 
 // Get current month's revenue - Modified query to be more flexible
 $current_month_sql = "SELECT COALESCE(SUM(parking_fee), 0) as total 
@@ -992,3 +997,4 @@ if (empty($chart_labels)) {
     </script>
 </body>
 </html>
+
