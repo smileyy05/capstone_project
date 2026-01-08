@@ -830,65 +830,24 @@ if (empty($chart_labels)) {
             <h2>SOUTHWOODS<br>MALL</h2>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item">
-                <a href="admin-dashboard.php" class="nav-link">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-vehicle-entry.php" class="nav-link">
-                    <i class="fas fa-car"></i>
-                    <span>Vehicle Entry</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-vehicle-logs.php" class="nav-link">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span>Vehicle Logs</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-reports.php" class="nav-link">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-analytics.php" class="nav-link active">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Analytics</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-archived.php" class="nav-link">
-                    <i class="fas fa-archive"></i>
-                    <span>Archived</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-account-settings.php" class="nav-link">
-                    <i class="fas fa-cog"></i>
-                    <span>Account Settings</span>
-                </a>
-            </li>
+            <li class="nav-item"><a href="admin-dashboard.php" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a></li>
+            <li class="nav-item"><a href="admin-vehicle-entry.php" class="nav-link"><i class="fas fa-car"></i><span>Vehicle Entry</span></a></li>
+            <li class="nav-item"><a href="admin-vehicle-logs.php" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Vehicle Logs</span></a></li>
+            <li class="nav-item"><a href="admin-reports.php" class="nav-link"><i class="fas fa-chart-bar"></i><span>Reports</span></a></li>
+            <li class="nav-item"><a href="admin-analytics.php" class="nav-link active"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="admin-archived.php" class="nav-link"><i class="fas fa-archive"></i><span>Archived</span></a></li>
+            <li class="nav-item"><a href="admin-account-settings.php" class="nav-link"><i class="fas fa-cog"></i><span>Account Settings</span></a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Header -->
         <div class="top-header">
-            <h1>
-                <i class="fas fa-chart-line"></i>
-                <span>Predictive Analytics Dashboard</span>
-            </h1>
-            <button class="logout-btn" onclick="window.location.href='admin-logout.php'">
-                LOGOUT
-            </button>
+            <h1><i class="fas fa-chart-line"></i><span>Predictive Analytics Dashboard</span></h1>
+            <button class="logout-btn" onclick="window.location.href='admin-logout.php'">LOGOUT</button>
         </div>
 
-         <?php if ($current_month_revenue == 0 && $total_transactions == 0): ?>
+        <?php if ($current_month_revenue == 0 && $total_transactions == 0): ?>
         <div class="debug-info">
             <strong>⚠️ Debug Info:</strong> No revenue data found for <?php echo $current_month; ?>. 
             Please check: (1) Records have exit_time filled, (2) parking_fee > 0, (3) Date format matches YYYY-MM.
@@ -904,10 +863,12 @@ if (empty($chart_labels)) {
                 <div class="stat-label">THIS MONTH'S REVENUE</div>
                 <div class="stat-value">₱<?php echo number_format($current_month_revenue, 2); ?></div>
                 <div class="stat-description">Total earnings this month</div>
+                <?php if ($previous_month_revenue > 0 || $current_month_revenue > 0): ?>
                 <span class="stat-badge <?php echo $growth_rate >= 0 ? 'positive' : 'negative'; ?>">
                     <i class="fas fa-<?php echo $growth_rate >= 0 ? 'arrow-up' : 'arrow-down'; ?>"></i>
                     <?php echo number_format(abs($growth_rate), 1); ?>%
                 </span>
+                <?php endif; ?>
             </div>
 
             <div class="stat-card">
@@ -931,14 +892,11 @@ if (empty($chart_labels)) {
 
         <!-- Prediction Section -->
         <div class="prediction-section">
-            <h2>
-                <i class="fas fa-chart-line"></i>
-                <span>Revenue Prediction</span>
-            </h2>
-            <form class="prediction-form" id="predictionForm">
+            <h2><i class="fas fa-chart-line"></i><span>Revenue Prediction</span></h2>
+            <form class="prediction-form">
                 <div class="form-group">
                     <label>Predict for:</label>
-                    <select id="predictionPeriod" name="period">
+                    <select id="predictionPeriod">
                         <option value="1">Next 1 Month</option>
                         <option value="3">Next 3 Months</option>
                         <option value="6">Next 6 Months</option>
@@ -946,17 +904,14 @@ if (empty($chart_labels)) {
                 </div>
                 <div class="form-group">
                     <label>Expected Growth Rate:</label>
-                    <select id="growthRate" name="growth">
+                    <select id="growthRate">
                         <option value="5">Low (5%)</option>
                         <option value="10" selected>Moderate (10%)</option>
                         <option value="15">High (15%)</option>
                     </select>
                 </div>
             </form>
-            <button class="predict-btn" onclick="generatePrediction()">
-                <i class="fas fa-magic"></i>
-                Generate Prediction
-            </button>
+            <button class="predict-btn" onclick="generatePrediction()"><i class="fas fa-magic"></i> Generate Prediction</button>
         </div>
 
         <!-- Chart Section -->
@@ -969,138 +924,48 @@ if (empty($chart_labels)) {
 
         <!-- AI Insights -->
         <div class="insights-section">
-            <h2>
-                <i class="fas fa-lightbulb"></i>
-                <span>AI-Powered Insights</span>
-            </h2>
+            <h2><i class="fas fa-lightbulb"></i><span>AI-Powered Insights</span></h2>
             <div class="insight-box" id="insightBox">
-                <h3>
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Waiting for Analysis</span>
-                </h3>
+                <h3><i class="fas fa-chart-bar"></i><span>Waiting for Analysis</span></h3>
                 <p>Generate a prediction to receive AI-powered insights about your revenue trends.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Mobile menu toggle
         function toggleMobileMenu() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.overlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
         }
 
-        // Close mobile menu when clicking on a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 767) {
-                    toggleMobileMenu();
-                }
-            });
-        });
-
-        // Chart Data
         const chartLabels = <?php echo json_encode($chart_labels); ?>;
         const chartValues = <?php echo json_encode($chart_values); ?>;
 
-        // Initialize Chart
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: chartLabels,
+                labels: chartLabels.length ? chartLabels : ['No Data'],
                 datasets: [{
                     label: 'Daily Revenue',
-                    data: chartValues,
+                    data: chartValues.length ? chartValues : [0],
                     borderColor: '#2563eb',
                     backgroundColor: 'rgba(37, 99, 235, 0.1)',
                     borderWidth: 3,
                     fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#2563eb',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
+                    tension: 0.4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            padding: window.innerWidth <= 480 ? 10 : 15,
-                            font: {
-                                size: window.innerWidth <= 480 ? 11 : 14,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: window.innerWidth <= 480 ? 10 : 12,
-                        titleFont: {
-                            size: window.innerWidth <= 480 ? 12 : 14
-                        },
-                        bodyFont: {
-                            size: window.innerWidth <= 480 ? 11 : 13
-                        },
-                        callbacks: {
-                            label: function(context) {
-                                return 'Revenue: ₱' + context.parsed.y.toFixed(2);
-                            }
-                        }
-                    }
-                },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '₱' + value.toFixed(0);
-                            },
-                            font: {
-                                size: window.innerWidth <= 480 ? 10 : 12
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            font: {
-                                size: window.innerWidth <= 480 ? 10 : 12
-                            },
-                            maxRotation: window.innerWidth <= 480 ? 45 : 0,
-                            minRotation: window.innerWidth <= 480 ? 45 : 0
-                        },
-                        grid: {
-                            display: false
-                        }
+                        ticks: { callback: value => '₱' + value }
                     }
                 }
             }
-        });
-
-        // Update chart on window resize
-        window.addEventListener('resize', () => {
-            revenueChart.options.plugins.legend.labels.padding = window.innerWidth <= 480 ? 10 : 15;
-            revenueChart.options.plugins.legend.labels.font.size = window.innerWidth <= 480 ? 11 : 14;
-            revenueChart.options.plugins.tooltip.padding = window.innerWidth <= 480 ? 10 : 12;
-            revenueChart.options.plugins.tooltip.titleFont.size = window.innerWidth <= 480 ? 12 : 14;
-            revenueChart.options.plugins.tooltip.bodyFont.size = window.innerWidth <= 480 ? 11 : 13;
-            revenueChart.options.scales.y.ticks.font.size = window.innerWidth <= 480 ? 10 : 12;
-            revenueChart.options.scales.x.ticks.font.size = window.innerWidth <= 480 ? 10 : 12;
-            revenueChart.options.scales.x.ticks.maxRotation = window.innerWidth <= 480 ? 45 : 0;
-            revenueChart.options.scales.x.ticks.minRotation = window.innerWidth <= 480 ? 45 : 0;
-            revenueChart.update();
         });
 
         function generatePrediction() {
@@ -1108,72 +973,22 @@ if (empty($chart_labels)) {
             const growth = parseFloat(document.getElementById('growthRate').value);
             const currentRevenue = <?php echo $current_month_revenue; ?>;
             
-            // Calculate prediction
-            let predictedRevenue;
-            if (period === 1) {
-                predictedRevenue = currentRevenue * (1 + (growth / 100));
-            } else {
-                predictedRevenue = currentRevenue * Math.pow((1 + (growth / 100)), period);
-            }
+            let predictedRevenue = period === 1 
+                ? currentRevenue * (1 + (growth / 100))
+                : currentRevenue * Math.pow((1 + (growth / 100)), period);
             
             const growthAmount = predictedRevenue - currentRevenue;
-            const totalTransactions = <?php echo $total_transactions; ?>;
-            const avgTransaction = totalTransactions > 0 ? currentRevenue / totalTransactions : 0;
-            const projectedTransactions = Math.round(totalTransactions * (1 + (growth / 100)) * period);
             
-            // Update insights
-            const insightBox = document.getElementById('insightBox');
-            insightBox.innerHTML = `
-                <h3>
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Revenue Prediction Analysis</span>
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <p style="margin-bottom: 0.5rem;"><strong>Current Revenue:</strong></p>
-                        <p style="font-size: 1.5rem; color: #2563eb; font-weight: 700;">₱${currentRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                    </div>
-                    <div>
-                        <p style="margin-bottom: 0.5rem;"><strong>Predicted (${period}mo):</strong></p>
-                        <p style="font-size: 1.5rem; color: #10b981; font-weight: 700;">₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                    </div>
-                </div>
-                
-                <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <p style="margin-bottom: 0.5rem; font-size: 0.9rem;"><strong>Growth Rate:</strong> ${growth}% per month</p>
-                    <p style="margin-bottom: 0.5rem; font-size: 0.9rem;"><strong>Growth Amount:</strong> ₱${growthAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                    <p style="margin-bottom: 0.5rem; font-size: 0.9rem;"><strong>Transactions:</strong> ${totalTransactions.toLocaleString()} → ${projectedTransactions.toLocaleString()}</p>
-                    <p style="font-size: 0.9rem;"><strong>Avg Transaction:</strong> ₱${avgTransaction.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                </div>
-                
-                <div style="padding: 1rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 8px; border-left: 4px solid #2563eb;">
-                    <p style="line-height: 1.6; color: #1f2937; font-size: 0.95rem; margin-bottom: 0.75rem;">
-                        <strong>📊 Analysis:</strong> Based on ${growth}% monthly growth, projected revenue is 
-                        <strong>₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong> over ${period} month${period > 1 ? 's' : ''}. 
-                        This is a <strong>${((growthAmount / currentRevenue) * 100).toFixed(1)}%</strong> increase.
-                    </p>
-                    <p style="line-height: 1.6; color: #1f2937; font-size: 0.95rem; margin-bottom: 0.75rem;">
-                        ${growth >= 15 ? '🚀 <strong>High Growth:</strong> Ambitious target. Focus on service quality and capacity expansion.' : 
-                          growth >= 10 ? '📈 <strong>Moderate Growth:</strong> Healthy growth. Optimize peak hours and pricing.' : 
-                          '📉 <strong>Conservative Growth:</strong> Stable projection. Consider promotional strategies.'}
-                    </p>
-                    <p style="line-height: 1.6; color: #1f2937; font-size: 0.95rem;">
-                        💡 <strong>Tip:</strong> Monitor trends and adjust strategies based on performance.
-                    </p>
+            document.getElementById('insightBox').innerHTML = `
+                <h3><i class="fas fa-chart-bar"></i><span>Revenue Prediction Analysis</span></h3>
+                <div style="margin: 1rem 0;">
+                    <p><strong>Current Revenue:</strong> ₱${currentRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <p><strong>Predicted (${period}mo):</strong> ₱${predictedRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <p><strong>Growth Amount:</strong> ₱${growthAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <p><strong>Growth Rate:</strong> ${growth}% per month</p>
                 </div>
             `;
-            
-            // Success feedback
-            const btn = document.querySelector('.predict-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Prediction Generated!';
-            btn.style.background = '#10b981';
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-            }, 2000);
         }
     </script>
 </body>
 </html>
-
