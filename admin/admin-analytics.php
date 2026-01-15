@@ -849,7 +849,6 @@ if (empty($chart_labels)) {
     <div class="main-content">
         <div class="top-header">
             <h1><i class="fas fa-chart-line"></i><span>Predictive Analytics Dashboard</span></h1>
-            <button class="logout-btn" onclick="window.location.href='admin-logout.php'">LOGOUT</button>
         </div>
 
         <?php if ($current_month_revenue == 0 && $total_transactions == 0): ?>
@@ -903,8 +902,17 @@ if (empty($chart_labels)) {
                     <label>Predict for:</label>
                     <select id="predictionPeriod">
                         <option value="1">Next 1 Month</option>
+                        <option value="3">Next 2 Months</option>
                         <option value="3">Next 3 Months</option>
+                        <option value="3">Next 4 Months</option>
+                        <option value="3">Next 5 Months</option>
                         <option value="6">Next 6 Months</option>
+                        <option value="3">Next 7 Months</option>
+                        <option value="3">Next 8 Months</option>
+                        <option value="3">Next 9 Months</option>
+                        <option value="3">Next 10 Months</option>
+                        <option value="3">Next 11 Months</option>
+                        <option value="3">Next 12 Months</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -997,4 +1005,5 @@ if (empty($chart_labels)) {
     </script>
 </body>
 </html>
+
 
