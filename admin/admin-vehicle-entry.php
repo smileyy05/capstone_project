@@ -345,7 +345,6 @@ if ($result) {
     <main class="admin-main">
       <div class="admin-header">
         <input type="text" placeholder="Search..." id="searchInput">
-        <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
       </div>
       
       <div class="admin-content">
@@ -430,3 +429,4 @@ if ($result) {
   </script>
 </body>
 </html>
+
