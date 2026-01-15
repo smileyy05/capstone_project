@@ -17,6 +17,7 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // Redirect to main page - FIXED: Added "Location: " prefix
-header("Location: ../website/index.php");
+header("Location: /index.php");
 exit();
+
 ?>
