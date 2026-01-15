@@ -728,7 +728,6 @@ $customers = db_fetch_all($result);
         <h1>📦 Archived Customers</h1>
         <div class="header-right">
           <input type="text" placeholder="Search..." id="searchInput">
-          <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
         </div>
       </div>
       
@@ -977,3 +976,4 @@ $customers = db_fetch_all($result);
   </script>
 </body>
 </html>
+
