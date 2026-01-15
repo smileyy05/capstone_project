@@ -500,7 +500,6 @@ if ($result && db_num_rows($result) > 0) {
     
     <main class="admin-main">
       <div class="admin-header">
-        <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
       </div>
       
       <div class="admin-content">
@@ -642,3 +641,4 @@ if ($result && db_num_rows($result) > 0) {
   </script>
 </body>
 </html>
+
