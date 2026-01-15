@@ -572,8 +572,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="admin-header">
         <h1>⚙️ Account Settings</h1>
         <div class="header-right">
-          <input type="text" placeholder="Search..." id="searchInput">
-          <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
         </div>
       </div>
       
@@ -666,3 +664,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </script>
 </body>
 </html>
+
