@@ -612,7 +612,6 @@ body {
         <h2>Vehicle Logs</h2>
         <div class="header-right">
           <input type="text" placeholder="Search logs..." id="searchInput">
-          <button onclick="window.location.href='admin-logout.php'">LOGOUT</button>
         </div>
       </div>
       
@@ -689,3 +688,4 @@ body {
 <?php
 pg_close($conn);
 ?>
+
