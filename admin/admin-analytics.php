@@ -902,17 +902,17 @@ if (empty($chart_labels)) {
                     <label>Predict for:</label>
                     <select id="predictionPeriod">
                         <option value="1">Next 1 Month</option>
-                        <option value="3">Next 2 Months</option>
+                        <option value="2">Next 2 Months</option>
                         <option value="3">Next 3 Months</option>
-                        <option value="3">Next 4 Months</option>
-                        <option value="3">Next 5 Months</option>
+                        <option value="4">Next 4 Months</option>
+                        <option value="5">Next 5 Months</option>
                         <option value="6">Next 6 Months</option>
-                        <option value="3">Next 7 Months</option>
-                        <option value="3">Next 8 Months</option>
-                        <option value="3">Next 9 Months</option>
-                        <option value="3">Next 10 Months</option>
-                        <option value="3">Next 11 Months</option>
-                        <option value="3">Next 12 Months</option>
+                        <option value="7">Next 7 Months</option>
+                        <option value="8">Next 8 Months</option>
+                        <option value="9">Next 9 Months</option>
+                        <option value="10">Next 10 Months</option>
+                        <option value="11">Next 11 Months</option>
+                        <option value="12">Next 12 Months</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1005,5 +1005,6 @@ if (empty($chart_labels)) {
     </script>
 </body>
 </html>
+
 
 
