@@ -17,6 +17,44 @@ if (!$userId) {
 $success = '';
 $error   = '';
 
+/* HANDLE ARCHIVE - MOVED BEFORE USER FETCH */
+if (isset($_GET['action']) && $_GET['action'] === 'archive') {
+    try {
+        // First check if user exists and is not already archived
+        $checkResult = db_prepare(
+            "SELECT id, archived FROM customers WHERE id = ?",
+            [$userId]
+        );
+        
+        if ($checkResult && db_num_rows($checkResult) === 1) {
+            $userData = db_fetch_assoc($checkResult);
+            
+            if ($userData['archived']) {
+                $error = "Customer is already archived!";
+            } else {
+                // Proceed with archiving
+                $updateResult = db_prepare(
+                    "UPDATE customers SET archived = true, archived_at = NOW() WHERE id = ? AND archived = false",
+                    [$userId]
+                );
+                
+                // Check if update was successful
+                // Some db_prepare implementations return true on success
+                if ($updateResult !== false) {
+                    header("Location: admin-vehicle-entry.php?archived=success");
+                    exit;
+                } else {
+                    $error = "Database error: Failed to archive customer!";
+                }
+            }
+        } else {
+            $error = "Customer not found!";
+        }
+    } catch (Exception $e) {
+        $error = "Error archiving customer: " . $e->getMessage();
+    }
+}
+
 /* HANDLE BALANCE RELOAD */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reload_balance'])) {
     $reloadAmount = $_POST['reload_amount'] ?? '';
@@ -42,21 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reload_balance'])) {
 
 if (isset($_GET['reload']) && $_GET['reload'] === 'success') {
     $success = "Balance reloaded successfully!";
-}
-
-/* HANDLE ARCHIVE */
-if (isset($_GET['action']) && $_GET['action'] === 'archive') {
-    $result = db_prepare(
-        "UPDATE customers SET archived = true, archived_at = NOW() WHERE id = ?",
-        [$userId]
-    );
-
-    if ($result) {
-        header("Location: admin-vehicle-entry.php?archived=success");
-        exit;
-    } else {
-        $error = "Failed to archive customer!";
-    }
 }
 
 /* FETCH USER */
