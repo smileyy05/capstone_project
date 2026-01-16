@@ -19,39 +19,23 @@ $error   = '';
 
 /* HANDLE ARCHIVE - MOVED BEFORE USER FETCH */
 if (isset($_GET['action']) && $_GET['action'] === 'archive') {
-    try {
-        // First check if user exists and is not already archived
-        $checkResult = db_prepare(
-            "SELECT id, archived FROM customers WHERE id = ?",
-            [$userId]
-        );
+    $updateResult = db_prepare(
+        "UPDATE customers SET archived = true, archived_at = NOW() WHERE id = ?",
+        [$userId]
+    );
+    
+    if ($updateResult !== false) {
+        // Check if any rows were actually updated
+        $affectedRows = db_affected_rows($updateResult);
         
-        if ($checkResult && db_num_rows($checkResult) === 1) {
-            $userData = db_fetch_assoc($checkResult);
-            
-            if ($userData['archived']) {
-                $error = "Customer is already archived!";
-            } else {
-                // Proceed with archiving
-                $updateResult = db_prepare(
-                    "UPDATE customers SET archived = true, archived_at = NOW() WHERE id = ? AND archived = false",
-                    [$userId]
-                );
-                
-                // Check if update was successful
-                // Some db_prepare implementations return true on success
-                if ($updateResult !== false) {
-                    header("Location: admin-vehicle-entry.php?archived=success");
-                    exit;
-                } else {
-                    $error = "Database error: Failed to archive customer!";
-                }
-            }
+        if ($affectedRows > 0) {
+            header("Location: admin-vehicle-entry.php?archived=success");
+            exit;
         } else {
-            $error = "Customer not found!";
+            $error = "Customer not found or already archived!";
         }
-    } catch (Exception $e) {
-        $error = "Error archiving customer: " . $e->getMessage();
+    } else {
+        $error = "Database error: " . db_error();
     }
 }
 
