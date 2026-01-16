@@ -20,7 +20,7 @@ $error   = '';
 /* HANDLE ARCHIVE - MOVED BEFORE USER FETCH */
 if (isset($_GET['action']) && $_GET['action'] === 'archive') {
     $updateResult = db_prepare(
-        "UPDATE customers SET archived = true, archived_at = NOW() WHERE id = ?",
+        "UPDATE customers SET archived = 1, archived_at = NOW() WHERE id = ?",
         [$userId]
     );
     
