@@ -14,15 +14,15 @@ if (isset($_GET['archived']) && $_GET['archived'] === 'success') {
     $success = 'Customer has been archived successfully!';
 }
 
-// Get ALL customers (remove archived filter to see everyone)
-$sql = "SELECT * FROM customers ORDER BY id DESC";
+// Get ONLY non-archived customers (archived = 0 or IS NULL)
+$sql = "SELECT * FROM customers WHERE (archived = 0 OR archived IS NULL) ORDER BY id DESC";
 $result = db_query($sql);
 
 // Debug information
 $debug_info = '';
 if ($result) {
     $row_count = db_num_rows($result);
-    $debug_info = "Found $row_count customers in database";
+    $debug_info = "Found $row_count active customers in database";
 } else {
     $debug_info = "Query failed or returned no result";
 }
@@ -399,7 +399,7 @@ if ($result) {
                       echo "</tr>";
                   }
               } else {
-                  echo "<tr><td colspan='9' class='empty-state'><h3>No Customers Yet</h3><p>No customers have registered in the system.</p></td></tr>";
+                  echo "<tr><td colspan='9' class='empty-state'><h3>No Active Customers</h3><p>No active customers found. Archived customers can be viewed in the Archived section.</p></td></tr>";
               }
               ?>
             </tbody>
@@ -429,4 +429,3 @@ if ($result) {
   </script>
 </body>
 </html>
-
